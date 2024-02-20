@@ -1,0 +1,51 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+#homelog{
+    margin:200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+}
+.student{
+    border: solid gray;
+    padding: 40px;
+    margin: 30px;
+    border-radius: 25px;
+}
+.teacher{
+    border: solid gray;
+    padding: 40px;
+    margin: 30px;
+    border-radius: 25px;
+}
+.parent{
+    border: solid gray;
+    padding: 40px;
+    margin: 30px;
+    border-radius: 25px;
+}
+.anc{
+     justify-content: center;
+     text-decoration: none;
+     margin-top: 20px;
+     border-width: 3px;
+     color:red;
+     font-weight: bold;
+     border-radius: 20px;
+     font-size: 20px;
+}
+.anc:hover{
+    color: aqua;
+    border: solid pink;
+
+    
+}
+form label{
+    color: black;
+    font-style: italic;
+    font-size: 20px;
+    font-weight: bold;
+}
