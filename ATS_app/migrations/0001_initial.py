@@ -33,12 +33,20 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='ATTENDANCE_INFO',
+            name='TEACHER_INFO',
             fields=[
-                ('ATTENDANCE_ID', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ATS_app.ATTENDANCE')),
-                ('ABSENCE_REASON', models.CharField(max_length=255)),
-                ('OD_REASON', models.CharField(max_length=255)),
-                ('LATE_REASON', models.CharField(max_length=255)),
+                ('TEACHER_ID', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ATS_app.TEACHER')),
+                ('DEPARTMENT', models.CharField(max_length=255)),
+                ('SECTION', models.CharField(max_length=255)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='STUDENT',
+            fields=[
+                ('STUDENT_ID', models.IntegerField(primary_key=True, serialize=False)),
+                ('FIRST_NAME', models.CharField(max_length=255)),
+                ('LAST_NAME', models.CharField(max_length=255)),
+                ('PARENT_ID', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ATS_app.PARENT')),
             ],
         ),
         migrations.CreateModel(
@@ -50,28 +58,11 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='TEACHER_INFO',
-            fields=[
-                ('TEACHER_ID', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ATS_app.TEACHER')),
-                ('DEPARTMENT', models.CharField(max_length=255)),
-                ('SECTION', models.CharField(max_length=255)),
-            ],
-        ),
-        migrations.CreateModel(
             name='SUBJECT',
             fields=[
                 ('SUBJECT_ID', models.IntegerField(primary_key=True, serialize=False)),
                 ('SUBJECT_NAME', models.CharField(max_length=255)),
                 ('TEACHER_ID', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ATS_app.TEACHER')),
-            ],
-        ),
-        migrations.CreateModel(
-            name='STUDENT',
-            fields=[
-                ('STUDENT_ID', models.IntegerField(primary_key=True, serialize=False)),
-                ('FIRST_NAME', models.CharField(max_length=255)),
-                ('LAST_NAME', models.CharField(max_length=255)),
-                ('PARENT_ID', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ATS_app.PARENT')),
             ],
         ),
         migrations.CreateModel(
@@ -90,6 +81,15 @@ class Migration(migrations.Migration):
                 ('STATUS', models.CharField(max_length=255)),
                 ('SUBJECT_ID', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ATS_app.SUBJECT')),
                 ('TEACHER_ID', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='ATS_app.TEACHER')),
+            ],
+        ),
+        migrations.CreateModel(
+            name='ATTENDANCE_INFO',
+            fields=[
+                ('ATTENDANCE_ID', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, primary_key=True, serialize=False, to='ATS_app.ATTENDANCE')),
+                ('ABSENCE_REASON', models.CharField(max_length=255)),
+                ('OD_REASON', models.CharField(max_length=255)),
+                ('LATE_REASON', models.CharField(max_length=255)),
             ],
         ),
     ]
