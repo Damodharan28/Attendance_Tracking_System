@@ -5,4 +5,4 @@ def ats(request):
     return HttpResponse("Attendance")
 
 def home(request):
-    return render(request,'sample.html' , {'name' : 'damo'})
+    return render(request,'index.html')
