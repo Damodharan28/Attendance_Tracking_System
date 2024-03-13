@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="{% static 'css/choicelog.css' %}">
+</head>
+<body>
+    <div id="homelog">
+        <form action="" class="student">
+            <label for="student"> I am Student</label><br>
+            <a href="student_login.html" class="anc">login</a>
+        </form>
+        <form action="" class="teacher">
+            <label for="teacher">Teacher Login</label><br>
+            <a href="teacher_login.html" class="anc">login</a>
+        </form>  
+        <form action="" class="parent">
+            <label for="parent">I am parent</label><br>
+            <a href="parent_login.html" class="anc">login</a>
+        </form>
+    </div>
+</body>
+</html>

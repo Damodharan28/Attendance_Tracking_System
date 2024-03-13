@@ -27,9 +27,7 @@ def student_register(request):
                 return redirect('/')
         else:
             messages.info(request,"Password not matching...")
-            return redirect('register')
-    else:
-        return render(request,'register.html')
+            return redirect('login.html#')
     
 def teacher_register(request):
     if request.method == 'POST':
@@ -50,9 +48,7 @@ def teacher_register(request):
                 return redirect('/')
         else:
             messages.info(request,"Password not matching...")
-            return redirect('register')
-    else:
-        return render(request,'register.html')
+            return redirect('login.html#')
     
 def parent_register(request):
     if request.method == 'POST':
@@ -73,6 +69,21 @@ def parent_register(request):
                 return redirect('/')
         else:
             messages.info(request,"Password not matching...")
-            return redirect('register')
-    else:
-        return render(request,'register.html')
+            return redirect('login.html#')
+def student_login(request):
+        if request.method == 'POST':
+            pass
+        else:
+            return render(request,'student_login.html')
+
+def parent_login(request):
+        if request.method == 'POST':
+            pass
+        else:
+            return render(request,'parent_login.html')
+
+def teacher_login(request):
+        if request.method == 'POST':
+            pass
+        else:
+            return render(request,'teacher_login.html')

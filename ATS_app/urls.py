@@ -6,6 +6,6 @@ urlpatterns = [
     # string url, function name
     # chop off the app url and sends the 
     # remaining part
-    path('attendance/', views.ats),
-    path('', views.home)
+    path('', views.home),
+    path('login_as/', views.login_as, name='login_as'),
 ]
