@@ -4,8 +4,8 @@ class PARENT(models.Model):
     PARENT_ID = models.IntegerField(primary_key=True)
     FIRST_NAME = models.CharField(max_length=255)
     LAST_NAME = models.CharField(max_length=255)
-    PHONE_NO = models.CharField(max_length=255)
-    EMAIL_ADDRESS = models.CharField(max_length=255)
+    PHONE_NO = models.CharField(max_length=255, unique=True)
+    EMAIL_ADDRESS = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return f"{self.PARENT_ID}"
@@ -15,6 +15,7 @@ class STUDENT(models.Model):
     FIRST_NAME = models.CharField(max_length=255)
     LAST_NAME = models.CharField(max_length=255)
     PARENT_ID = models.ForeignKey(PARENT, on_delete=models.CASCADE)
+    EMAIL_ADDRESS = models.CharField(max_length=255, unique=True)
 
     def __str__(self):
         return f"{self.STUDENT_ID}"
@@ -27,23 +28,15 @@ class STUDENT_INFO(models.Model):
     def __str__(self):
         return f"{self.STUDENT_ID}"
 
-# class TEACHER(models.Model):
-#     TEACHER_ID = models.IntegerField(primary_key=True)
-#     FIRST_NAME = models.CharField(max_length=255)
-#     LAST_NAME = models.CharField(max_length=255)
-#     PHONE_NO = models.CharField(max_length=255)
-#     EMAIL_ADDRESS = models.CharField(max_length=255, null=True)
+class TEACHER(models.Model):
+    TEACHER_ID = models.IntegerField(primary_key=True)
+    FIRST_NAME = models.CharField(max_length=255)
+    LAST_NAME = models.CharField(max_length=255)
+    PHONE_NO = models.CharField(max_length=255, unique=True)
+    EMAIL_ADDRESS = models.CharField(max_length=255, unique=True)
 
-#     def __str__(self):
-#         return f"{self.TEACHER_ID}"
-
-# class TEACHER_INFO(models.Model):
-#     TEACHER_ID = models.OneToOneField(TEACHER,primary_key=True, on_delete=models.CASCADE)
-#     DEPARTMENT = models.CharField(max_length=255)
-#     SECTION = models.CharField(max_length=255)
-
-#     def __str__(self):
-#         return f"{self.TEACHER_ID}"
+    def __str__(self):
+        return f"{self.TEACHER_ID}"
 
 class SUBJECT(models.Model):
     SUBJECT_ID = models.IntegerField(primary_key=True)
