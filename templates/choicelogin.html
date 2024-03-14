@@ -5,22 +5,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="{% static 'css/choicelog.css' %}">
+    <link rel="stylesheet" href="choicelog.css">
 </head>
 <body>
-    <div id="homelog">
-        <form action="" class="student">
-            <label for="student"> I am Student</label><br>
-            <a href="/student_login/" class="anc">login</a>
-        </form>
-        <form action="" class="teacher">
-            <label for="teacher">Teacher Login</label><br>
-            <a href="/teacher_login/'" class="anc">login</a>
-        </form>  
-        <form action="" class="parent">
-            <label for="parent">I am parent</label><br>
-            <a href="/parent_login/" class="anc">login</a>
-        </form>
+    <script>
+        function redirect(page) {
+          window.location.href = page;
+        }
+        </script>
+    <div class="container">
+        <div class="card"onclick="redirect('login.html')">
+            <p class="heading">
+              I am Student
+            </p>
+            <p>
+              Login
+            </p>
+        </div>
+        <div class="card"onclick="redirect('login.html')">
+            <!-- Second card content here -->
+            <p class="heading">
+                I am Teacher
+              </p>
+              <p>
+                Login
+              </p>
+
+        </div>
+        <div class="card"onclick="redirect('login.html')">
+            <!-- Third card content here -->
+            <p class="heading">
+                I am Parent
+              </p>
+              <p>
+                Login
+              </p>
+      
+        </div>
     </div>
 </body>
 </html>
+
