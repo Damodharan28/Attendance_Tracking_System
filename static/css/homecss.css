@@ -346,3 +346,58 @@ h1{
     color: hsla(0, 0%, 0%, .6);
     font-size: 1.6rem;
   }
+  .quote{
+    background-color: rgba(16, 4, 64, 1);
+    color: #e81691;
+    padding-top: 150px;
+    padding-bottom: 100px;
+    text-align: center;
+    font-size: 45px;
+    font-style: italic;
+   
+  }
+  .qu{display: inline;
+    margin-left: 35px;
+    margin-right: 35px;
+
+}
+.somcon{
+  margin-top: 150px;
+    margin-bottom: 100px;
+    margin-right: 200px;
+    margin-left: 200px;
+    font-size: 24px;
+  background-color: rgb(213, 207, 207,0.5);
+  backdrop-filter: blur(50%);
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  padding-right: 600px;
+
+}
+.sc{
+  z-index: +1;
+  display: inline;
+  
+}
+.footer {
+  background-color: rgba(16, 4, 64, 1);
+  color: white;
+  padding-top: 40px;
+  padding-bottom: 75px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.feau-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.feau {
+  padding-left: 100px;
+}
+
+.ben {
+  padding-right: 100px;
+}
+
