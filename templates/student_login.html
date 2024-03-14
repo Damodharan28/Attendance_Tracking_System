@@ -11,7 +11,7 @@
 <body style="display:flex; align-items:center; justify-content:center;">
 <div class="login-page">
   <div class="form">
-    <form class="register-form" action="student_register" method="POST">
+    <form class="register-form" id="registerForm" action="student_register" method="POST">
       <h2>Register</h2>
       <input type="email" placeholder="Email *" name="email_id" required/>
       <input type="password" placeholder="Password *" name="password" required/>
@@ -25,7 +25,7 @@
       </a>
       <p class="message">Already registered? <a href="#">Sign In</a></p>
     </form>
-    <form class="login-form" action="student_login" method="post">
+    <form class="login-form" id="loginForm" action="student_login" method="post">
       <h2></i> Login</h2>
       <input type="text" placeholder="Username" required />
       <input type="password" placeholder="Password" required/>
@@ -36,11 +36,11 @@
         <span></span>
         Sign in
       </a>
-      <p class="message">Not registered? <a href="#">Create an account</a></p>
+      <p class="message">Not registered? <a href="#" id="createAcc">Create an account</a></p>
     </form>
   </div>
 </div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="loginjs.js"></script>
+<script src="{% static 'js/loginjs.js' %}"></script>
 </body>
 </html>
