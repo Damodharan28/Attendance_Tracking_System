@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendance Tracking System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 10px 0;
+        }
+
+        .menu {
+            display: flex;
+            background-color: #333;
+            color: white;
+            padding: 10px;
+        }
+
+        .menu button {
+            background-color: transparent;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            cursor: pointer;
+            text-align: center;
+            transition: background-color 0.3s;
+        }
+
+        .menu button:hover {
+            background-color: #555;
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content h2 {
+            border-bottom: 1px solid #ccc;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: none;
+        }
+
+        form.active {
+            display: block;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        input[type="submit"] {
+            background-color: #333;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Attendance Tracking System</h1>
+    </header>
+    <div class="menu">
+        <button onclick="toggle('dataEntry')">Data Entry</button>
+        <button onclick="toggle('attendanceEntry')">Attendance Excel Entry</button>
+    </div>
+    <div class="content">
+        <form id="dataEntry" class="active">
+            <h2>Data Entry Form</h2>
+            <label for="file">Choose File:</label>
+            <input type="file" id="file">
+            <input type="submit" value="Upload File">
+        </form>
+        <form id="attendanceEntry" class="hidden">
+            <h2>Attendance Excel Entry Form</h2>
+            <label for="attendanceFile">Choose File:</label>
+            <input type="file" id="attendanceFile">
+            <input type="submit" value="Upload File">
+        </form>
+    </div>
+
+    <script>
+        function toggle(id) {
+            var forms = document.querySelectorAll('.content form');
+            for (var i = 0; i < forms.length; i++) {
+                if (forms[i].id === id) {
+                    forms[i].classList.add('active');
+                } else {
+                    forms[i].classList.remove('active');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Parent Dashboard</title>
+<link type="text/css" rel="stylesheet" href="{% static 'css/teacher_page.css' %}">
+</head>
+<body>
+<div class="container">
+    <div class="card">
+        <h2>Statistics</h2>
+        <p>View attendance statistics</p>
+        <a href="/statistics">View Statistics</a>
+    </div>
+    <div class="card">
+        <h2>Report</h2>
+        <p>Generate attendance report</p>
+        <a href="/report">Generate Report</a>
+    </div>
+</div>
+</body>
+</html>

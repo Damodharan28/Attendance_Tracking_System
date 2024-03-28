@@ -54,10 +54,17 @@ h2{
   color: #289bb8;
   text-decoration: none;
 }
-.form .register-form {
-  display: none;
+.alert-message{
+  font-family: sans-serif;
+  color: #289bb8;
+  text-decoration: none;
 }
+/* .form .register-form {
+  display: none;
+} */
 .btn {
+  border : none;
+  background-color: transparent;
   position: relative;
   display: inline-block;
   padding: 10px 20px;
@@ -67,9 +74,10 @@ h2{
   overflow: hidden;
   transition: .5s;
   margin-top: 15px;
-  letter-spacing: 2px
+  letter-spacing: 2px;
 }
 .btn:hover {
+  /* border : none; */
   background: #289bb8;
   color: #fff;
   border-radius: 5px;

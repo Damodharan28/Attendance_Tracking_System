@@ -7,40 +7,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <title>Register</title>
     <link type="text/css" rel="stylesheet" href="{% static 'css/logincss.css' %}">
+    
+    <!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+    <!-- <script src="{% static 'js/student_register.js' %}"></script> -->
+    <!-- <script src="{% static 'js/loginjs.js' %}"></script> -->
+    <script>
+      function redirect(page) {
+          window.location.href = window.location.origin + '/' + page;
+      }
+    </script>
+
 </head>
 <body style="display:flex; align-items:center; justify-content:center;">
 <div class="login-page">
   <div class="form">
-    <form class="register-form" action="teacher_register" method="POST">
-      <h2>Register</h2>
-      <input type="email" placeholder="Email *" name="email_id" required/>
-      <input type="password" placeholder="Password *" name="password" required/>
-      <input type="password" placeholder="Confirm Password *" name="password1" required/>
-      <a class="btn" href="#">
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        Create
-      </a>
-      <p class="message">Already registered? <a href="#">Sign In</a></p>
-    </form>
-    <form class="login-form" action="teacher_login" method="post">
+    <form class="login-form" id="loginForm" action="/teacher_login/" method="POST">
       <h2></i> Login</h2>
-      <input type="text" placeholder="Username" required />
-      <input type="password" placeholder="Password" required/>
-      <a class="btn" href="#">
+      {% csrf_token %}
+      {{ loginform }}
+      <!-- css class function for different messages -->
+      {% for message in messages %}
+      <div class="alert-message">
+        {{ message }}
+      </div>
+      {% endfor %}
+      <!-- <button type="submit">Sign In</button>-->
+      <button class="btn" id="createButton" name="login" type="submit" >
         <span></span>
         <span></span>
         <span></span>
         <span></span>
-        Sign in
-      </a>
-      <p class="message">Not registered? <a href="#">Create an account</a></p>
+        Sign In
+      </button>
+      <p class="message">Not registered? <a href="{% url 'teacher_register' %}">Create an account</a></p>
     </form>
   </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="loginjs.js"></script>
+
 </body>
 </html>

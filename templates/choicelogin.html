@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="choicelog.css">
+    <title>Login as</title>
+    <link rel="stylesheet" href="{% static 'css/choice.css' %}">
 </head>
 <body>
     <script>
@@ -14,7 +14,7 @@
         }
         </script>
     <div class="container">
-        <div class="card"onclick="redirect('login.html')">
+        <div class="card"onclick="redirect('student_login');">
             <p class="heading">
               I am Student
             </p>
@@ -22,7 +22,7 @@
               Login
             </p>
         </div>
-        <div class="card"onclick="redirect('login.html')">
+        <div class="card"onclick="redirect('teacher_login');">
             <!-- Second card content here -->
             <p class="heading">
                 I am Teacher
@@ -32,7 +32,7 @@
               </p>
 
         </div>
-        <div class="card"onclick="redirect('login.html')">
+        <div class="card"onclick="redirect('parent_login');">
             <!-- Third card content here -->
             <p class="heading">
                 I am Parent
@@ -43,6 +43,11 @@
       
         </div>
     </div>
+    <script>
+      function redirect(page) {
+          window.location.href = window.location.origin + '/' + page;
+      }
+  </script>
 </body>
 </html>
 
