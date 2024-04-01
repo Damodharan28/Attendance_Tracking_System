@@ -210,29 +210,34 @@ def PARENT_upload(request):
         if not new_PARENT.name.endswith('xlsx'):
             messages.info(request,'wrong format')
             return render(request,'attendance_entry.html')
+
         try:
             imported_data = dataset.load(new_PARENT.read(),format='xlsx')
             for data in imported_data:
                 value = PARENT(
-                    data[0],
-                    data[1],
-                    data[2],
-                    data[3],
-                    data[4]
+                    PARENT_ID=data[0],
+                    FIRST_NAME=data[1],
+                    LAST_NAME=data[2],
+                    PHONE_NO=data[3],
+                    EMAIL_ADDRESS=data[4]
                 )
                 value.save()
             messages.success(request, 'Parent data uploaded successfully.')
 
-        except IntegrityError:
-            messages.error(request, 'Data is not unique. Please check your input.')
-        except ValueError:
-            messages.error(request, 'Unsupported data type. Please check your input.')
+        except IntegrityError as ie:
+            messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
+        except ValueError as ve:
+            messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
         except Exception as e:
             messages.error(request, f'An error occurred: {str(e)}')
 
     return render(request,'attendance_entry.html')
     
 def StudentAndInfo_upload(request):
+    # Clear existing messages
+    storage = messages.get_messages(request)
+    storage.used = True
+
     if request.method == 'POST':
         STUDENT_resource = StudentAndInfoResource()
         dataset = Dataset()
@@ -242,38 +247,49 @@ def StudentAndInfo_upload(request):
             messages.info(request,'wrong format')
             return render(request,'attendance_entry.html')
         
-        imported_data = dataset.load(new_STUDENT.read(),format='xlsx')
-        for data in imported_data:
-            parent_id = data[3]  # Assuming data[3] contains the parent_id
-            try:
-                parent = PARENT.objects.get(pk=parent_id)
-            except PARENT.DoesNotExist:
-                messages.error(request, f"Parent with ID {parent_id} does not exist.")
-                return render(request, 'attendance_entry.html')
-            student = STUDENT(
-                STUDENT_ID=data[0],
-                FIRST_NAME=data[1],
-                LAST_NAME=data[2],
-                PARENT_ID=parent,
-                EMAIL_ADDRESS=data[4]
-            )
-            student.save()
-            student_id = data[0]  # Assuming data[3] contains the parent_id
-            try:
-                student = STUDENT.objects.get(pk=student_id)
-            except STUDENT.DoesNotExist:
-                messages.error(request, f"Student with ID {student_id} does not exist.")
-                return render(request, 'attendance_entry.html')
-            student_info = STUDENT_INFO(
-                STUDENT_ID=student,
-                DEPARTMENT=data[5],
-                SECTION=data[6]
-            )
-            student_info.save()
-        messages.success(request, 'Student data uploaded successfully.')
+        try:
+            imported_data = dataset.load(new_STUDENT.read(),format='xlsx')
+            for data in imported_data:
+                parent_id = data[3]  # Assuming data[3] contains the parent_id
+                try:
+                    parent = PARENT.objects.get(pk=parent_id)
+                except PARENT.DoesNotExist:
+                    messages.error(request, f"Parent with ID {parent_id} does not exist.")
+                    return render(request, 'attendance_entry.html')
+                student = STUDENT(
+                    STUDENT_ID=data[0],
+                    FIRST_NAME=data[1],
+                    LAST_NAME=data[2],
+                    PARENT_ID=parent,
+                    EMAIL_ADDRESS=data[4]
+                )
+                student.save()
+                student_id = data[0]  # Assuming data[3] contains the parent_id
+                try:
+                    student = STUDENT.objects.get(pk=student_id)
+                except STUDENT.DoesNotExist:
+                    messages.error(request, f"Student with ID {student_id} does not exist.")
+                    return render(request, 'attendance_entry.html')
+                student_info = STUDENT_INFO(
+                    STUDENT_ID=student,
+                    DEPARTMENT=data[5],
+                    SECTION=data[6]
+                )
+                student_info.save()
+            messages.success(request, 'Student data uploaded successfully.')
+        except IntegrityError as ie:
+            messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
+        except ValueError as ve:
+            messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
     return render(request,'attendance_entry.html')
 
 def SUBJECT_upload(request):
+    # Clear existing messages
+    storage = messages.get_messages(request)
+    storage.used = True
     if request.method == 'POST':
         SUBJECT_resource = SUBJECTResource()
         dataset = Dataset()
@@ -283,18 +299,29 @@ def SUBJECT_upload(request):
             messages.info(request,'wrong format')
             return render(request,'attendance_entry.html')
         
-        imported_data = dataset.load(new_SUBJECT.read(),format='xlsx')
-        for data in imported_data:
-            value = SUBJECT(
-                data[0],
-                data[1],
-                data[2]
-            )
-            value.save()
-        messages.success(request, 'Subject data uploaded successfully.')
+        try:
+            imported_data = dataset.load(new_SUBJECT.read(),format='xlsx')
+            for data in imported_data:
+                value = SUBJECT(
+                    data[0],
+                    data[1],
+                    data[2]
+                )
+                value.save()
+            messages.success(request, 'Subject data uploaded successfully.')
+        except IntegrityError as ie:
+            messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
+        except ValueError as ve:
+            messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
     return render(request,'attendance_entry.html')
     
 def TEACHER_upload(request):
+    # Clear existing messages
+    storage = messages.get_messages(request)
+    storage.used = True
     if request.method == 'POST':
         TEACHER_resource = TEACHERResource()
         dataset = Dataset()
@@ -304,18 +331,29 @@ def TEACHER_upload(request):
             messages.info(request,'wrong format')
             return render(request,'attendance_entry.html')
         
-        imported_data = dataset.load(new_TEACHER.read(),format='xlsx')
-        for data in imported_data:
-            value = TEACHER(
-                data[0],
-                data[1],
-                data[2]
-            )
-            value.save()
-        messages.success(request, 'Teacher data uploaded successfully.')
+        try:
+            imported_data = dataset.load(new_TEACHER.read(),format='xlsx')
+            for data in imported_data:
+                value = TEACHER(
+                    data[0],
+                    data[1],
+                    data[2]
+                )
+                value.save()
+            messages.success(request, 'Teacher data uploaded successfully.')
+        except IntegrityError as ie:
+            messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
+        except ValueError as ve:
+            messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
     return render(request,'attendance_entry.html')
     
 def ATTENDANCEINFO_upload(request):
+    # Clear existing messages
+    storage = messages.get_messages(request)
+    storage.used = True
     if request.method == 'POST':
         ATTENDANCEINFO_resource = ATTENDANCEINFOResource()
         dataset = Dataset()
@@ -324,16 +362,23 @@ def ATTENDANCEINFO_upload(request):
         if not new_ATTENDANCE_INFO.name.endswith('xlsx'):
             messages.info(request,'wrong format')
             return render(request,'attendance_entry.html')
-        
-        imported_data = dataset.load(new_ATTENDANCE_INFO.read(),format='xlsx')
-        for data in imported_data:
-            value = ATTENDANCE_INFO(
-                data[0],
-                data[1],
-                data[2]
-            )
-            value.save()
-    return render(request,'upload.html')
+        try:
+            imported_data = dataset.load(new_ATTENDANCE_INFO.read(),format='xlsx')
+            for data in imported_data:
+                value = ATTENDANCE_INFO(
+                    data[0],
+                    data[1],
+                    data[2]
+                )
+                value.save()
+            messages.success(request, 'Attendance data uploaded successfully.')
+        except IntegrityError as ie:
+            messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
+        except ValueError as ve:
+            messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+    return render(request,'attendance_entry.html')
     
 def ATTENDANCE_upload(request):
     if request.method == 'POST':
