@@ -19,5 +19,7 @@ urlpatterns = [
     path('Parent_Dashboard',views.parent_dashboard, name="Parent_Dashboard"),
     path('attendance_entry/',views.attendance_entry, name='attendance_entry'),
     path('parent_upload/',views.PARENT_upload, name='parent_upload'),
-    
+    path('student_upload/',views.StudentAndInfo_upload, name='student_upload'),
+    path('subject_upload/',views.SUBJECT_upload, name='subject_upload'),
+    path('teacher_upload/',views.TEACHER_upload, name='teacher_upload'),
 ]

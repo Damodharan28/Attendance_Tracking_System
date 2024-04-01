@@ -94,13 +94,13 @@
     <div class="content">
         {% if messages %}
         {% for message in messages %}
-        <div class="alert alert-{{message.tags}}" role="alert">
-        <p {% if message.tags %}> class=""{% endif %}>{{ message }}</p>
+        <div class="alert alert-{{ message.tags }}" role="alert" style="color:red;">
+            {{ message }}
         </div>
-        {%endfor%}
+        {% endfor %}
         {% endif %}
 
-        <form id="dataEntry" class="active" enctype="multipart/form-data" method="post" action="/parent_upload/">
+        <form id="dataEntry" class="active" enctype="multipart/form-data" method="post">
             {% csrf_token %}
             <h2>Data Entry Form</h2>
             <label for="file">Choose File:</label>
@@ -110,23 +110,17 @@
                 <option value="parent">Parent</option>
                 <option value="student">Student</option>
                 <option value="teacher">Teacher</option>
+                <option value="subject">Subject</option>
             </select><br><br>
             <input type="submit" value="Upload File">
             <h2>Please upload excel file</h2>
         </form>
-
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-{{message.tags}}" role="alert">
-        <p {% if message.tags %}> class=""{% endif %}>{{ message }}</p>
-        </div>
-        {%endfor%}
-        {% endif %}
+        
 
         <form id="attendanceEntry" class="hidden" enctype="multipart/form-data">
             {% csrf_token %}
             <h2>Attendance Excel Entry Form</h2>
-            <label for="attendanceFile">Choose File:</label>
+            <label for="attendance_file">Choose File:</label>
             <input type="file" id="attendance_file" name="myfile" >
             <input type="submit" value="Upload File">
             <h2>Please upload excel file</h2>
@@ -145,6 +139,26 @@
             }
         }
     </script>
+    <script>
+        // Set default action on page load
+        document.addEventListener("DOMContentLoaded", function() {
+            var selectedModel = document.getElementById("model").value;
+            if (selectedModel === "") {
+                document.getElementById("dataEntry").action = "/parent_upload/";
+            } else {
+                document.getElementById("dataEntry").action = "/" + selectedModel + "_upload/";
+            }
+        });
+        document.getElementById("model").addEventListener("change", function() {
+            var selectedModel = document.getElementById("model").value;
+            if (selectedModel === "") {
+                document.getElementById("dataEntry").action = "/parent_upload/";
+            } else {
+                document.getElementById("dataEntry").action = "/" + selectedModel + "_upload/";
+            }
+        });
+        </script>
+    
 </body>
 
 </html>

@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
+from django.db.utils import IntegrityError
 
 from .forms import StudentRegistrationForm
 from .forms import StudentLoginForm
@@ -19,16 +20,17 @@ from .models import STUDENT_INFO
 # from .models import TEACHER_INFO
 from .models import SUBJECT
 from .models import TEACHER
+from .models import ATTENDANCE_INFO
 from .models import ATTENDANCE
-from .models import ATTENDANCE_PER_HRS
 
 from .resources import PARENTResource
-from .resources import STUDENTResource
-from .resources import STUDENT_INFOResource
+# from .resources import STUDENTResource
+# from .resources import STUDENT_INFOResource
+from .resources import StudentAndInfoResource
 from .resources import SUBJECTResource
 from .resources import TEACHERResource
+from .resources import ATTENDANCEINFOResource
 from .resources import ATTENDANCEResource
-from .resources import ATTENDANCE_PER_HRSResource
 from django.contrib import messages
 from tablib import Dataset
 
@@ -166,7 +168,6 @@ def teacher_login(request):
         loginform = form
         return render(request,'teacher_login.html',{'loginform': loginform })
 
-
 def teacher_register(request):
         if request.method == 'POST':
             form = TeacherRegistrationForm(request.POST)
@@ -198,6 +199,10 @@ def teacher_register(request):
 
 def PARENT_upload(request):
     if request.method == 'POST':
+        # Clear existing messages
+        storage = messages.get_messages(request)
+        storage.used = True
+
         PARENT_resource = PARENTResource()
         dataset = Dataset()
         new_PARENT = request.FILES['myfile']
@@ -205,10 +210,144 @@ def PARENT_upload(request):
         if not new_PARENT.name.endswith('xlsx'):
             messages.info(request,'wrong format')
             return render(request,'attendance_entry.html')
+        try:
+            imported_data = dataset.load(new_PARENT.read(),format='xlsx')
+            for data in imported_data:
+                value = PARENT(
+                    data[0],
+                    data[1],
+                    data[2],
+                    data[3],
+                    data[4]
+                )
+                value.save()
+            messages.success(request, 'Parent data uploaded successfully.')
+
+        except IntegrityError:
+            messages.error(request, 'Data is not unique. Please check your input.')
+        except ValueError:
+            messages.error(request, 'Unsupported data type. Please check your input.')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+
+    return render(request,'attendance_entry.html')
+    
+def StudentAndInfo_upload(request):
+    if request.method == 'POST':
+        STUDENT_resource = StudentAndInfoResource()
+        dataset = Dataset()
+        new_STUDENT = request.FILES['myfile']
+
+        if not new_STUDENT.name.endswith('xlsx'):
+            messages.info(request,'wrong format')
+            return render(request,'attendance_entry.html')
         
-        imported_data = dataset.load(new_PARENT.read(),format='xlsx')
+        imported_data = dataset.load(new_STUDENT.read(),format='xlsx')
         for data in imported_data:
-            value = PARENT(
+            parent_id = data[3]  # Assuming data[3] contains the parent_id
+            try:
+                parent = PARENT.objects.get(pk=parent_id)
+            except PARENT.DoesNotExist:
+                messages.error(request, f"Parent with ID {parent_id} does not exist.")
+                return render(request, 'attendance_entry.html')
+            student = STUDENT(
+                STUDENT_ID=data[0],
+                FIRST_NAME=data[1],
+                LAST_NAME=data[2],
+                PARENT_ID=parent,
+                EMAIL_ADDRESS=data[4]
+            )
+            student.save()
+            student_id = data[0]  # Assuming data[3] contains the parent_id
+            try:
+                student = STUDENT.objects.get(pk=student_id)
+            except STUDENT.DoesNotExist:
+                messages.error(request, f"Student with ID {student_id} does not exist.")
+                return render(request, 'attendance_entry.html')
+            student_info = STUDENT_INFO(
+                STUDENT_ID=student,
+                DEPARTMENT=data[5],
+                SECTION=data[6]
+            )
+            student_info.save()
+        messages.success(request, 'Student data uploaded successfully.')
+    return render(request,'attendance_entry.html')
+
+def SUBJECT_upload(request):
+    if request.method == 'POST':
+        SUBJECT_resource = SUBJECTResource()
+        dataset = Dataset()
+        new_SUBJECT = request.FILES['myfile']
+
+        if not new_SUBJECT.name.endswith('xlsx'):
+            messages.info(request,'wrong format')
+            return render(request,'attendance_entry.html')
+        
+        imported_data = dataset.load(new_SUBJECT.read(),format='xlsx')
+        for data in imported_data:
+            value = SUBJECT(
+                data[0],
+                data[1],
+                data[2]
+            )
+            value.save()
+        messages.success(request, 'Subject data uploaded successfully.')
+    return render(request,'attendance_entry.html')
+    
+def TEACHER_upload(request):
+    if request.method == 'POST':
+        TEACHER_resource = TEACHERResource()
+        dataset = Dataset()
+        new_TEACHER = request.FILES['myfile']
+
+        if not new_TEACHER.name.endswith('xlsx'):
+            messages.info(request,'wrong format')
+            return render(request,'attendance_entry.html')
+        
+        imported_data = dataset.load(new_TEACHER.read(),format='xlsx')
+        for data in imported_data:
+            value = TEACHER(
+                data[0],
+                data[1],
+                data[2]
+            )
+            value.save()
+        messages.success(request, 'Teacher data uploaded successfully.')
+    return render(request,'attendance_entry.html')
+    
+def ATTENDANCEINFO_upload(request):
+    if request.method == 'POST':
+        ATTENDANCEINFO_resource = ATTENDANCEINFOResource()
+        dataset = Dataset()
+        new_ATTENDANCE_INFO = request.FILES['myfile']
+
+        if not new_ATTENDANCE_INFO.name.endswith('xlsx'):
+            messages.info(request,'wrong format')
+            return render(request,'attendance_entry.html')
+        
+        imported_data = dataset.load(new_ATTENDANCE_INFO.read(),format='xlsx')
+        for data in imported_data:
+            value = ATTENDANCE_INFO(
+                data[0],
+                data[1],
+                data[2]
+            )
+            value.save()
+    return render(request,'upload.html')
+    
+def ATTENDANCE_upload(request):
+    if request.method == 'POST':
+        ATTENDANCEresource = ATTENDANCEResource()
+        dataset = Dataset()
+        new_ATTENDANCE = request.FILES['myfile']
+
+        if not new_ATTENDANCE.name.endswith('xlsx'):
+            messages.info(request,'wrong format')
+            return render(request,'upload.html')
+        
+        imported_data = dataset.load(new_ATTENDANCE.read(),format='xlsx')
+        for data in imported_data:
+            value = ATTENDANCE(
                 data[0],
                 data[1],
                 data[2],
@@ -216,129 +355,7 @@ def PARENT_upload(request):
                 data[4]
             )
             value.save()
-    return render(request,'attendance_entry.html')
-    
-# def STUDENT_upload(request):
-#     if request.method == 'POST':
-#         STUDENT_resource = STUDENTResource()
-#         dataset = Dataset()
-#         new_STUDENT = request.FILES['myfile']
-
-#         if not new_STUDENT.name.endswith('xlsx'):
-#             messages.info(request,'wrong format')
-#             return render(request,'upload.html')
-        
-#         imported_data = dataset.load(new_STUDENT.read(),format='xlsx')
-#         for data in imported_data:
-#             value = STUDENT(
-#                 data[0],
-#                 data[1],
-#                 data[2],
-#                 data[3]
-#             )
-#             value.save()
-#     return render(request,'upload.html')
-    
-# def STUDENT_INFO_upload(request):
-#     if request.method == 'POST':
-#         STUDENT_INFO_resource = STUDENT_INFOResource()
-#         dataset = Dataset()
-#         new_STUDENT_INFO = request.FILES['myfile']
-
-#         if not new_STUDENT_INFO.name.endswith('xlsx'):
-#             messages.info(request,'wrong format')
-#             return render(request,'upload.html')
-        
-#         imported_data = dataset.load(new_STUDENT_INFO.read(),format='xlsx')
-#         for data in imported_data:
-#             value = STUDENT_INFO(
-#                 data[0],
-#                 data[1],
-#                 data[2]
-#             )
-#             value.save()
-#     return render(request,'upload.html')
-    
-# def SUBJECT_upload(request):
-#     if request.method == 'POST':
-#         SUBJECT_resource = SUBJECTResource()
-#         dataset = Dataset()
-#         new_SUBJECT = request.FILES['myfile']
-
-#         if not new_SUBJECT.name.endswith('xlsx'):
-#             messages.info(request,'wrong format')
-#             return render(request,'upload.html')
-        
-#         imported_data = dataset.load(new_SUBJECT.read(),format='xlsx')
-#         for data in imported_data:
-#             value = SUBJECT(
-#                 data[0],
-#                 data[1],
-#                 data[2]
-#             )
-#             value.save()
-#     return render(request,'upload.html')
-    
-# def TEACHER_upload(request):
-#     if request.method == 'POST':
-#         TEACHER_resource = TEACHERResource()
-#         dataset = Dataset()
-#         new_TEACHER = request.FILES['myfile']
-
-#         if not new_TEACHER.name.endswith('xlsx'):
-#             messages.info(request,'wrong format')
-#             return render(request,'upload.html')
-        
-#         imported_data = dataset.load(new_TEACHER.read(),format='xlsx')
-#         for data in imported_data:
-#             value = TEACHER(
-#                 data[0],
-#                 data[1],
-#                 data[2]
-#             )
-#             value.save()
-#     return render(request,'upload.html')
-    
-# def ATTENDANCE_upload(request):
-#     if request.method == 'POST':
-#         ATTENDANCE_resource = ATTENDANCEResource()
-#         dataset = Dataset()
-#         new_ATTENDANCE = request.FILES['myfile']
-
-#         if not new_ATTENDANCE.name.endswith('xlsx'):
-#             messages.info(request,'wrong format')
-#             return render(request,'upload.html')
-        
-#         imported_data = dataset.load(new_ATTENDANCE.read(),format='xlsx')
-#         for data in imported_data:
-#             value = ATTENDANCE(
-#                 data[0],
-#                 data[1],
-#                 data[2]
-#             )
-#             value.save()
-#     return render(request,'upload.html')
-    
-# def ATTENDANCE_PER_HRS_upload(request):
-#     if request.method == 'POST':
-#         ATTENDANCE_PER_HRS_resource = ATTENDANCE_PER_HRSResource()
-#         dataset = Dataset()
-#         new_ATTENDANCE_PER_HRS = request.FILES['myfile']
-
-#         if not new_ATTENDANCE_PER_HRS.name.endswith('xlsx'):
-#             messages.info(request,'wrong format')
-#             return render(request,'upload.html')
-        
-#         imported_data = dataset.load(new_ATTENDANCE_PER_HRS.read(),format='xlsx')
-#         for data in imported_data:
-#             value = ATTENDANCE_PER_HRS(
-#                 data[0],
-#                 data[1],
-#                 data[2],
-#                 data[3]
-#             )
-#             value.save()
-#     return render(request,'upload.html')
+    return render(request,'upload.html')
 
 #-----------------------------------------------------------------------------------------
 def home(request):
