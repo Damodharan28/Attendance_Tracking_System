@@ -7,6 +7,9 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
 
+from django.db.models import Count
+from matplotlib import pyplot as plt
+
 from .forms import StudentRegistrationForm
 from .forms import StudentLoginForm
 from .forms import TeacherRegistrationForm
@@ -18,23 +21,29 @@ from .models import PARENT
 from .models import STUDENT
 from .models import STUDENT_INFO
 # from .models import TEACHER_INFO
-from .models import SUBJECT
+# from .models import SUBJECT
 from .models import TEACHER
-from .models import ATTENDANCE_INFO
-from .models import ATTENDANCE
+# from .models import ATTENDANCE_INFO
+from .models import ATTENDANCE_DATA
 
 from .resources import PARENTResource
 # from .resources import STUDENTResource
 # from .resources import STUDENT_INFOResource
 from .resources import StudentAndInfoResource
-from .resources import SUBJECTResource
+# from .resources import SUBJECTResource
 from .resources import TEACHERResource
-from .resources import ATTENDANCEINFOResource
+# from .resources import ATTENDANCEINFOResource
 from .resources import ATTENDANCEResource
 from django.contrib import messages
 from tablib import Dataset
 
+from openpyxl import load_workbook
+from django.utils import timezone
+# from tablib import Dataset
 
+# from .models import ATTENDANCE_INFO
+# from .resources import ATTENDANCEResource
+# Create or update an instance of YourModel with date_field set to the current date
 #-----------------------------------------------------------------
 def student_login(request):
         if request.method == 'POST':
@@ -285,38 +294,6 @@ def StudentAndInfo_upload(request):
             messages.error(request, f'An error occurred: {str(e)}')
 
     return render(request,'attendance_entry.html')
-
-def SUBJECT_upload(request):
-    # Clear existing messages
-    storage = messages.get_messages(request)
-    storage.used = True
-    if request.method == 'POST':
-        SUBJECT_resource = SUBJECTResource()
-        dataset = Dataset()
-        new_SUBJECT = request.FILES['myfile']
-
-        if not new_SUBJECT.name.endswith('xlsx'):
-            messages.info(request,'wrong format')
-            return render(request,'attendance_entry.html')
-        
-        try:
-            imported_data = dataset.load(new_SUBJECT.read(),format='xlsx')
-            for data in imported_data:
-                value = SUBJECT(
-                    data[0],
-                    data[1],
-                    data[2]
-                )
-                value.save()
-            messages.success(request, 'Subject data uploaded successfully.')
-        except IntegrityError as ie:
-            messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
-        except ValueError as ve:
-            messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
-        except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
-
-    return render(request,'attendance_entry.html')
     
 def TEACHER_upload(request):
     # Clear existing messages
@@ -335,52 +312,28 @@ def TEACHER_upload(request):
             imported_data = dataset.load(new_TEACHER.read(),format='xlsx')
             for data in imported_data:
                 value = TEACHER(
-                    data[0],
-                    data[1],
-                    data[2]
+                    TEACHER_ID=data[0],
+                    FIRST_NAME=data[1],
+                    LAST_NAME=data[2],
+                    PHONE_NO=data[3],
+                    EMAIL_ADDRESS=data[4]
                 )
                 value.save()
             messages.success(request, 'Teacher data uploaded successfully.')
         except IntegrityError as ie:
+            print(ie.args[1])
             messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
         except ValueError as ve:
             messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
         except Exception as e:
             messages.error(request, f'An error occurred: {str(e)}')
 
-    return render(request,'attendance_entry.html')
-    
-def ATTENDANCEINFO_upload(request):
-    # Clear existing messages
-    storage = messages.get_messages(request)
-    storage.used = True
-    if request.method == 'POST':
-        ATTENDANCEINFO_resource = ATTENDANCEINFOResource()
-        dataset = Dataset()
-        new_ATTENDANCE_INFO = request.FILES['myfile']
-
-        if not new_ATTENDANCE_INFO.name.endswith('xlsx'):
-            messages.info(request,'wrong format')
-            return render(request,'attendance_entry.html')
-        try:
-            imported_data = dataset.load(new_ATTENDANCE_INFO.read(),format='xlsx')
-            for data in imported_data:
-                value = ATTENDANCE_INFO(
-                    data[0],
-                    data[1],
-                    data[2]
-                )
-                value.save()
-            messages.success(request, 'Attendance data uploaded successfully.')
-        except IntegrityError as ie:
-            messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
-        except ValueError as ve:
-            messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
-        except Exception as e:
-            messages.error(request, f'An error occurred: {str(e)}')
     return render(request,'attendance_entry.html')
     
 def ATTENDANCE_upload(request):
+    # Clear existing messages
+    storage = messages.get_messages(request)
+    storage.used = True
     if request.method == 'POST':
         ATTENDANCEresource = ATTENDANCEResource()
         dataset = Dataset()
@@ -388,19 +341,105 @@ def ATTENDANCE_upload(request):
 
         if not new_ATTENDANCE.name.endswith('xlsx'):
             messages.info(request,'wrong format')
-            return render(request,'upload.html')
+            return render(request,'attendance_entry.html')
         
-        imported_data = dataset.load(new_ATTENDANCE.read(),format='xlsx')
-        for data in imported_data:
-            value = ATTENDANCE(
-                data[0],
-                data[1],
-                data[2],
-                data[3],
-                data[4]
-            )
+        try:
+            imported_data = dataset.load(new_ATTENDANCE.read(),format='xlsx')
+            for data in imported_data:
+                student_id = data[0]
+                try:
+                    student = STUDENT.objects.get(pk=student_id)
+                except STUDENT.DoesNotExist:
+                    messages.error(request, f"Student with ID {student_id} does not exist.")
+                    return render(request, 'attendance_entry.html')
+                value = ATTENDANCE_DATA(
+                    STUDENT_ID=student,
+                    FIRST_NAME=data[1],
+                    LAST_NAME=data[2],
+                    DATE=data[3],
+                    HOUR1=data[4],
+                    HOUR2=data[5],
+                    HOUR3=data[6],
+                    HOUR4=data[7],
+                    HOUR5=data[8],
+                    HOUR6=data[9],
+                    HOUR7=data[10],
+                    HOUR8=data[11],
+                )
             value.save()
-    return render(request,'upload.html')
+        except IntegrityError as ie:
+            messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
+        except ValueError as ve:
+            messages.error(request, f'Unsupported data type. Please check your input: {str(ve)}')
+        except Exception as e:
+            messages.error(request, f'An error occurred: {str(e)}')
+    return render(request,'attendance_entry.html')
+
+def dashboard(request):
+    # Query all data
+    attendance_data = ATTENDANCE_DATA.objects.all()
+
+    # Count attendance for each hour (hr1 to hr8) across all data
+    attendance_counts = {}
+    for hour in range(1, 9):
+        hour_field = f'HOUR{hour}'
+        attendance_counts[f'Hour {hour}'] = attendance_data.filter(**{hour_field: True}).count()
+
+    # Plot the data
+    plt.figure(figsize=(10, 6))
+    plt.pie(attendance_counts.values(), labels=attendance_counts.keys(), autopct='%1.1f%%', startangle=90)
+    plt.title('Overall Attendance Distribution')
+    plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
+    plt.savefig('plots/attendance.png')  # Save the plot as a PNG file
+    plt.close()
+
+    # Pass the path to the saved plot to the template
+    context = {'plot_path': 'plots/attendance.png'}
+
+    # Render the template with the plot
+    return render(request, 'dashboard.html', context)
+
+# def download_attendance_excel(request):
+#     current_date = timezone.now().date()
+#     day_week = current_date.weekday()
+
+#     days={
+#          0 : "MONDAY",
+#          1 : "TUESDAY",
+#          2 : "WEDNESDAY",
+#          3 : "THURSDAY",
+#          4 : "FRIDAY"
+#     }
+
+#     dataset = Dataset()
+#     imported_data = dataset.load(open('excels/timetable.xlsx', 'rb').read(),format='xlsx')
+
+#     subjects =[]
+#     for data in imported_data:
+#         if data[0] == days[day_week]:
+#             for i in range(1,9):
+#                 subjects.append(data[i])
+
+#     wb = load_workbook('excels/attendance.xlsx')
+
+#     # Iterate over all sheets in the workbook
+#     for sheet in wb.sheetnames:
+#         ws = wb[sheet]
+#         # Delete all rows in the sheet
+#         ws.delete_rows(1, ws.max_row)
+
+#     # Define the headers
+#     wb.append(["ATTENDANCE_ID","DATE","HOUR","SUBJECT_ID","STATUS"])
+
+#     all_objects = ATTENDANCE_INFO.objects.all()
+
+#     # Iterate over the objects and access their fields
+#     for obj in all_objects:
+#         for i in range(1,9):
+#             wb.append(obj.ATTENDANCE_ID,current_date,i,subjects[i-1],"PRESENT") 
+
+#     wb.save('excels/attendance.xlsx')
+#     print("created")    
 
 #-----------------------------------------------------------------------------------------
 def home(request):

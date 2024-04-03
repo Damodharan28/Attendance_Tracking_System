@@ -125,30 +125,22 @@
         {% endif %}
 
 
-        <form id="attendanceEntry" class="hidden" enctype="multipart/form-data">
+        <form id="attendanceEntry" class="hidden" enctype="multipart/form-data" method="post">
             {% csrf_token %}
             <h2>Attendance Excel Entry Form</h2>
             <label for="attendance_file">Choose File:</label>
             <input type="file" id="attendance_file" name="myfile" >
+            <label for="attendance_model">Select Model:</label>
+            <select id="attendance_model" name="attendance_model">
+                <option value="attendance_info">Attendance data</option>
+                <option value="attendance">Daily Attendance</option>
+            </select><br><br>
             <input type="submit" value="Upload File">
             <h2>Please upload excel file</h2>
         </form>
-    </div>
+        </div>
 
     <script>
-        function toggle(id) {
-            var forms = document.querySelectorAll('.content form');
-            for (var i = 0; i < forms.length; i++) {
-                if (forms[i].id === id) {
-                    forms[i].classList.add('active');
-                } else {
-                    forms[i].classList.remove('active');
-                }
-            }
-        }
-    </script>
-    <script>
-        // Set default action on page load
         document.addEventListener("DOMContentLoaded", function() {
             var selectedModel = document.getElementById("model").value;
             if (selectedModel === "") {
@@ -157,12 +149,41 @@
                 document.getElementById("dataEntry").action = "/" + selectedModel + "_upload/";
             }
         });
+        function toggle(id) {
+            var forms = document.querySelectorAll('.content form');
+            for (var i = 0; i < forms.length; i++) {
+                if (forms[i].id === id) {
+                    forms[i].classList.add('active');
+                } else {
+                    forms[i].classList.remove('active');
+                    
+                }
+            }
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var selectedModel = document.getElementById("attendance_model").value;
+            if (selectedModel === "") {
+                document.getElementById("attendanceEntry").action = "/attendance_info_upload/";
+            } else {
+                document.getElementById("attendanceEntry").action = "/" + selectedModel + "_upload/";
+            }
+        });
         document.getElementById("model").addEventListener("change", function() {
             var selectedModel = document.getElementById("model").value;
             if (selectedModel === "") {
                 document.getElementById("dataEntry").action = "/parent_upload/";
             } else {
                 document.getElementById("dataEntry").action = "/" + selectedModel + "_upload/";
+            }
+        });
+        document.getElementById("attendance_model").addEventListener("change", function() {
+            var selectedModel = document.getElementById("attendance_model").value;
+            if (selectedModel === "") {
+                document.getElementById("attendanceEntry").action = "/attendance_info_upload/";
+            } else {
+                document.getElementById("attendanceEntry").action = "/" + selectedModel + "_upload/";
             }
         });
         </script>

@@ -20,6 +20,9 @@ urlpatterns = [
     path('attendance_entry/',views.attendance_entry, name='attendance_entry'),
     path('parent_upload/',views.PARENT_upload, name='parent_upload'),
     path('student_upload/',views.StudentAndInfo_upload, name='student_upload'),
-    path('subject_upload/',views.SUBJECT_upload, name='subject_upload'),
+    # path('subject_upload/',views.SUBJECT_upload, name='subject_upload'),
     path('teacher_upload/',views.TEACHER_upload, name='teacher_upload'),
+    # path('attendance_info_upload/',views.ATTENDANCEINFO_upload, name='attendanceinfo_upload'),
+    path('attendance_upload/',views.ATTENDANCE_upload, name='attendance_upload'),
+    path('dashboard/',views.dashboard, name='dashboard'),
 ]

@@ -44,40 +44,19 @@ class TEACHER(models.Model):
     def __str__(self):
         return f"{self.TEACHER_ID}"
 
-class SUBJECT(models.Model):
-    SUBJECT_ID = models.IntegerField(primary_key=True)
-    SUBJECT_NAME = models.CharField(max_length=255)
-    DEPARTMENT = models.CharField(max_length=255)
-    
-    def __str__(self):
-        return f"{self.SUBJECT_ID}"
-
-class ATTENDANCE_INFO(models.Model):
-    ATTENDANCE_ID = models.IntegerField(primary_key=True)
-    STUDENT_ID = models.ForeignKey(STUDENT, on_delete=models.CASCADE)
-    STUDENT_NAME = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.ATTENDANCE_ID}"
-
-class ATTENDANCE(models.Model):
-    ATTENDANCE_ID = models.ForeignKey(ATTENDANCE_INFO, on_delete=models.CASCADE, primary_key=True)
+class ATTENDANCE_DATA(models.Model):
+    STUDENT_ID = models.OneToOneField(STUDENT, on_delete=models.CASCADE,primary_key=True)
+    FIRST_NAME = models.CharField(max_length=255 , null=False)
+    LAST_NAME = models.CharField(max_length=255, default='')
     DATE = models.DateField()
-    HOUR = models.IntegerField()
-    SUBJECT_ID = models.ForeignKey(SUBJECT, on_delete=models.CASCADE)
-    STATUS = models.CharField(max_length=255)
-
-    class Meta:
-        unique_together = ('ATTENDANCE_ID', 'DATE')
+    HOUR1 = models.CharField(max_length=255, default='NULL')
+    HOUR2 = models.CharField(max_length=255, default='NULL')
+    HOUR3 = models.CharField(max_length=255, default='NULL')
+    HOUR4 = models.CharField(max_length=255, default='NULL')
+    HOUR5 = models.CharField(max_length=255, default='NULL')
+    HOUR6 = models.CharField(max_length=255, default='NULL')
+    HOUR7 = models.CharField(max_length=255, default='NULL')
+    HOUR8 = models.CharField(max_length=255, default='NULL')
 
     def __str__(self):
-        return f"{self.ATTENDANCE_ID} - {self.DATE}"
-
-# class ATTENDANCE_INFO(models.Model):
-#     ATTENDANCE_ID = models.OneToOneField(ATTENDANCE, on_delete=models.CASCADE, primary_key=True)
-#     ABSENCE_REASON = models.CharField(max_length=255)
-#     OD_REASON = models.CharField(max_length=255)
-#     LATE_REASON = models.CharField(max_length=255)
-
-#     def __str__(self):
-#         return f"{self.ATTENDANCE_ID}"
+        return f"{self.STUDENT_ID}"
