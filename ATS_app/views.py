@@ -367,7 +367,8 @@ def ATTENDANCE_upload(request):
                     HOUR7=data[10],
                     HOUR8=data[11],
                 )
-            value.save()
+                value.save()
+            messages.success(request, 'Attendance data uploaded successfully.')
         except IntegrityError as ie:
             messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
         except ValueError as ve:
@@ -412,49 +413,44 @@ def attendance_pie(request):
     return render(request, 'dashboard.html', context)
 
 def overall_attendance(request):
-    if request.method == 'POST':
-        date_str = request.POST.get('date')
+    # if request.method == 'POST':
+    # date_str = request.POST.get('date')
+    # date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    # Get all students
+    students = ATTENDANCE_DATA.objects.values('STUDENT_ID', 'FIRST_NAME', 'LAST_NAME').distinct()
+    # Prepare data for the plot
+    student_data = {}
+    for student in students:
+        student_name = f"{student['FIRST_NAME']} {student['LAST_NAME']}"
+        student_data[student_name] = {'total_hours_present': 0}
+        attendance_data = ATTENDANCE_DATA.objects.filter(STUDENT_ID=student['STUDENT_ID'], DATE = '2024-04-03')
+        print(attendance_data)
+        total_hours_present = sum([
+            1 for attendance in attendance_data for i in range(1, 9) if getattr(attendance, f'HOUR{i}') == 'PRESENT'
+        ])
+        student_data[student_name]['total_hours_present'] = total_hours_present
+    # Plot the data
+    plt.figure(figsize=(12, 6))
+    student_names = list(student_data.keys())
+    total_hours_present = [student_data[name]['total_hours_present'] for name in student_names]
+    plt.bar(student_names, total_hours_present, color='skyblue')
+    plt.xlabel('Students')
+    plt.ylabel('Total Hours Present')
+    plt.title('Total Hours Present for Each Student')
+    plt.xticks(rotation=45, ha='right')
+    plt.ylim(0, 8)
+    plt.tight_layout()
+    # Save the plot as an image
+    plot_path = 'static/plots/overall_attendance_rate.png'
+    plt.savefig(plot_path)
+    plt.close()
 
-        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    # Pass the path to the saved plot to the template
+    context = {'plot_path': plot_path}
 
-        # Get all students
-        students = ATTENDANCE_DATA.objects.values('STUDENT_ID', 'FIRST_NAME', 'LAST_NAME').distinct()
-
-        # Prepare data for the plot
-        student_data = {}
-        for student in students:
-            student_name = f"{student['FIRST_NAME']} {student['LAST_NAME']}"
-            student_data[student_name] = {'total_hours_present': 0}
-            attendance_data = ATTENDANCE_DATA.objects.filter(STUDENT_ID=student['STUDENT_ID'], DATE = date)
-            print(attendance_data)
-            total_hours_present = sum([
-                1 for attendance in attendance_data for i in range(1, 9) if getattr(attendance, f'HOUR{i}') == 'PRESENT'
-            ])
-            student_data[student_name]['total_hours_present'] = total_hours_present
-
-
-        # Plot the data
-        plt.figure(figsize=(12, 6))
-        student_names = list(student_data.keys())
-        total_hours_present = [student_data[name]['total_hours_present'] for name in student_names]
-        plt.bar(student_names, total_hours_present, color='skyblue')
-        plt.xlabel('Students')
-        plt.ylabel('Total Hours Present')
-        plt.title('Total Hours Present for Each Student')
-        plt.xticks(rotation=45, ha='right')
-        plt.ylim(0, 8)
-        plt.tight_layout()
-        # Save the plot as an image
-        plot_path = 'static/plots/overall_attendance_rate.png'
-        plt.savefig(plot_path)
-        plt.close()
-    
-        # Pass the path to the saved plot to the template
-        context = {'plot_path': plot_path}
-    
-        # Render the template with the plot
-        return render(request, 'overall_attendance.html', context)
-    return render(request,'overall_attendance.html')
+    # Render the template with the plot
+    return render(request, 'overall_attendance.html', context)
+    # return render(request,'overall_attendance.html')
 # def download_attendance_excel(request):
 #     current_date = timezone.now().date()
 #     day_week = current_date.weekday()

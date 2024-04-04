@@ -80,9 +80,9 @@ WSGI_APPLICATION = 'ATS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'attendance_tracking_system',
+        'NAME': 'attendance_tracking_schema',
         'USER': 'root',
-        'PASSWORD' : 'damo@mysql123',
+        'PASSWORD' : '1234',
         'HOST' : 'localhost',
         'PORT' : '3306',
     }
@@ -130,6 +130,13 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
+DEBUG=True
 
 from django.contrib.messages import constants as messages
 
