@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +7,6 @@
 </head>
 <body>
     <h1>Overall Attendance Distribution</h1>
-    <img src="{{ plots/attendance.png }}" alt="Pie Chart">
+    <img src="{% static 'plots/attendance.png' %}" alt="Pie Chart">
 </body>
 </html>

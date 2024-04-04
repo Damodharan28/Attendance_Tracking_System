@@ -96,5 +96,29 @@ import random
 
 # # Save the workbook back to the Excel file
 # wb.save(excel_file)
-date = datetime.now().strftime("%Y-%m-%d")
-print(date)
+# date = datetime.now().strftime("%Y-%m-%d")
+# print(date)
+
+attendance = [
+    (20001, "Emma", "Johnson",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20002, "Liam", "Smith"),
+    (20003, "Olivia", "Williams"),
+    (20004, "Noah", "Brown"),
+    (20005, "Ava", "Jones"),
+    (20006, "William", "Davis"),
+    (20007, "Sophia", "Miller"),
+    (20008, "James", "Wilson"),
+    (20009, "Isabella", "Taylor"),
+    (20010, "Benjamin", "Anderson"),
+    (20011, "Mia", "Martinez"),
+    (20012, "Ethan", "Thomas"),
+    (20013, "Charlotte", "Garcia"),
+    (20014, "Amelia", "Hernandez"),
+    (20015, "Henry", "Robinson"),
+    (20016, "Ella", "Young"),
+    (20017, "Jacob", "Rodriguez"),
+    (20018, "Avery", "Lewis"),
+    (20019, "Sofia", "Hall"),
+    (20020, "Michael", "Allen"),
+    (20021, "Scarlett", "Scott"),
+    (20022, "Logan", "King")]

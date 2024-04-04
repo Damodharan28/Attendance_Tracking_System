@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
-
+from django.db.models import Sum, Case, When, Value, IntegerField , F
+from datetime import datetime
 from django.db.models import Count
 from matplotlib import pyplot as plt
 
@@ -375,30 +376,85 @@ def ATTENDANCE_upload(request):
             messages.error(request, f'An error occurred: {str(e)}')
     return render(request,'attendance_entry.html')
 
-def dashboard(request):
-    # Query all data
-    attendance_data = ATTENDANCE_DATA.objects.all()
+def attendance_pie(request):
+    try:
+        attendance_data = ATTENDANCE_DATA.objects.get(STUDENT_ID=20001, DATE="2024-04-03")
+    except ATTENDANCE_DATA.DoesNotExist:
+        return HttpResponse('Attendance data not found for the given student and date')
 
-    # Count attendance for each hour (hr1 to hr8) across all data
-    attendance_counts = {}
+    # Count the occurrences of each status (present, absent, od)
+    status_counts = {'PRESENT': 0, 'ABSENT': 0, 'ON DUTY': 0}
     for hour in range(1, 9):
-        hour_field = f'HOUR{hour}'
-        attendance_counts[f'Hour {hour}'] = attendance_data.filter(**{hour_field: True}).count()
+        status = getattr(attendance_data, f'HOUR{hour}', None)
+        if status == 'PRESENT':
+            status_counts['PRESENT'] += 1
+        elif status == 'ABSENT':
+            status_counts['ABSENT'] += 1
+        elif status == 'ON DUTY':
+            status_counts['ON DUTY'] += 1
+
+    if not any(status_counts.values()):
+        # No valid data for the pie chart
+        return HttpResponse('No attendance data available for the given student and date')
 
     # Plot the data
     plt.figure(figsize=(10, 6))
-    plt.pie(attendance_counts.values(), labels=attendance_counts.keys(), autopct='%1.1f%%', startangle=90)
-    plt.title('Overall Attendance Distribution')
+    plt.pie(status_counts.values(), labels=status_counts.keys(), autopct='%1.1f%%', startangle=90)
+    plt.title(f'Attendance Status for Student {20001} on {"2024-04-03"}')
     plt.axis('equal')  # Equal aspect ratio ensures that pie is drawn as a circle
-    plt.savefig('plots/attendance.png')  # Save the plot as a PNG file
+    plt.savefig('static/plots/attendance.png')  # Save the plot as a PNG file
     plt.close()
 
     # Pass the path to the saved plot to the template
-    context = {'plot_path': 'plots/attendance.png'}
+    context = {'plot_path': 'static/plots/attendance.png'}
 
     # Render the template with the plot
     return render(request, 'dashboard.html', context)
 
+def overall_attendance(request):
+    if request.method == 'POST':
+        date_str = request.POST.get('date')
+
+        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+
+        # Get all students
+        students = ATTENDANCE_DATA.objects.values('STUDENT_ID', 'FIRST_NAME', 'LAST_NAME').distinct()
+
+        # Prepare data for the plot
+        student_data = {}
+        for student in students:
+            student_name = f"{student['FIRST_NAME']} {student['LAST_NAME']}"
+            student_data[student_name] = {'total_hours_present': 0}
+            attendance_data = ATTENDANCE_DATA.objects.filter(STUDENT_ID=student['STUDENT_ID'], DATE = date)
+            print(attendance_data)
+            total_hours_present = sum([
+                1 for attendance in attendance_data for i in range(1, 9) if getattr(attendance, f'HOUR{i}') == 'PRESENT'
+            ])
+            student_data[student_name]['total_hours_present'] = total_hours_present
+
+
+        # Plot the data
+        plt.figure(figsize=(12, 6))
+        student_names = list(student_data.keys())
+        total_hours_present = [student_data[name]['total_hours_present'] for name in student_names]
+        plt.bar(student_names, total_hours_present, color='skyblue')
+        plt.xlabel('Students')
+        plt.ylabel('Total Hours Present')
+        plt.title('Total Hours Present for Each Student')
+        plt.xticks(rotation=45, ha='right')
+        plt.ylim(0, 8)
+        plt.tight_layout()
+        # Save the plot as an image
+        plot_path = 'static/plots/overall_attendance_rate.png'
+        plt.savefig(plot_path)
+        plt.close()
+    
+        # Pass the path to the saved plot to the template
+        context = {'plot_path': plot_path}
+    
+        # Render the template with the plot
+        return render(request, 'overall_attendance.html', context)
+    return render(request,'overall_attendance.html')
 # def download_attendance_excel(request):
 #     current_date = timezone.now().date()
 #     day_week = current_date.weekday()
@@ -456,6 +512,9 @@ def parent_dashboard(request):
 
 def student_dashboard(request):
     return render(request,'student_page.html')
+
+def dashboard(request):
+    return render(request,'dashboard_home.html')
 
 @login_required
 def attendance_entry(request):

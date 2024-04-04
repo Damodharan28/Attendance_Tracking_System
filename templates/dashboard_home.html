@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attendance Dashboard</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+    }
+    .container {
+        max-width: 1200px;
+        margin: 20px auto;
+        padding: 20px;
+        text-align: center;
+    }
+    .card {
+        display: inline-block;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        text-align: left;
+        text-decoration: none;
+        color: #fff;
+    }
+    h1 {
+        margin-top: 0;
+        text-align: center;
+    }
+    a{
+        text-decoration: none;
+    }
+    .overall-attendance {
+        background-color: #3498db;
+    }
+    .daily-attendance {
+        background-color: #2980b9;
+    }
+    .attendance-trends {
+        background-color: #1abc9c;
+    }
+    .attendance-summary {
+        background-color: #16a085;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>Attendance Tracking System</h1>
+    <div class="card overall-attendance">
+        <a href="/overall_attendance">
+            <h2>Overall Attendance Rate</h2>
+            <p>75%</p>
+        </a>
+    </div>
+    <div class="card daily-attendance">
+        <a href="#daily-attendance">
+            <h2>Daily Attendance Status</h2>
+            <p>Present</p>
+        </a>
+    </div>
+    <div class="card attendance-trends">
+        <a href="#attendance-trends">
+            <h2>Attendance Trends</h2>
+            <p>Increasing</p>
+        </a>
+    </div>
+    <div class="card attendance-summary">
+        <a href="#attendance-summary">
+            <h2>Attendance Summary</h2>
+            <p>Out of 100 students, 80 were present today.</p>
+        </a>
+    </div>
+</div>
+</body>
+</html>

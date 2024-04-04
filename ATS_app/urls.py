@@ -25,4 +25,5 @@ urlpatterns = [
     # path('attendance_info_upload/',views.ATTENDANCEINFO_upload, name='attendanceinfo_upload'),
     path('attendance_upload/',views.ATTENDANCE_upload, name='attendance_upload'),
     path('dashboard/',views.dashboard, name='dashboard'),
+    path('overall_attendance/',views.overall_attendance, name='overall_attendance'),
 ]

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'ATS_app',
     'import_export',
+    'matplotlib',
 ]
 
 MIDDLEWARE = [
