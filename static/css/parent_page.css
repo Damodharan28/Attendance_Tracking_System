@@ -1,9 +1,8 @@
-
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f7f2f2; /* Dark background color */
+    background-color: #f0eeee; /* Dark background color */
 }
 
 .container {
@@ -41,15 +40,14 @@ body {
 }
 .wrap2{
     background-color: rgba(16, 4, 64, 1);
-    padding: 45px;
+    padding: 100px;
 }
 li,.menu{
     display: inline;
     position: relative;
 }
 .menu{
-  bottom: 40px;
-    left: 55%;
+    margin-left: 800px;
 }
 li{
     font-size: 20px;
@@ -71,8 +69,8 @@ a{
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    margin-top: 100px;
-    margin-bottom: 100px;
+    margin-top: 50px;
+    margin-bottom: 50px;
   }
   
   .wrap {
@@ -90,11 +88,12 @@ a{
     --bX: 50%;
     --bY: 80%;
   
-    width: 10rem;
+    width: 15rem;
     height: 16rem;
     border: 1px solid var(--background-color);
     border-radius: 1.6rem;
     padding: 4rem;
+    margin: 100px;
   
     display: flex;
     align-items: flex-end;
@@ -102,13 +101,13 @@ a{
     position: relative;
     transform: rotateX(calc(var(--rX) * 1deg)) rotateY(calc(var(--rY) * 1deg));
   
-    background: linear-gradient(hsla(0, 0%, 100%, .1), hsla(0, 0%, 100%, .1)), url("https://images.unsplash.com/photo-1559113513-d5e09c78b9dd?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjF9");
+    background: linear-gradient(hsla(0, 0%, 100%, .1), hsla(0, 0%, 100%, .1)) ;
     background-position: var(--bX) var(--bY);
     background-size: 40rem auto;
     box-shadow: 0 0 3rem .5rem hsla(0, 0%, 0%, .2);
   
-    transition: transform .6s 1s;
-  }
+    transition: transform .6s 1s;}
+
 
   
   .container::before,

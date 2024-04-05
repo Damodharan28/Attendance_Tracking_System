@@ -372,7 +372,8 @@ def ATTENDANCE_upload(request):
                     HOUR7=data[10],
                     HOUR8=data[11],
                 )
-            value.save()
+                value.save()
+            messages.success(request, 'Attendance data uploaded successfully.')
         except IntegrityError as ie:
             messages.error(request, f'Data is not unique. Please check your input: {str(ie.args[1])}')
         except ValueError as ve:

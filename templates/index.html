@@ -1,4 +1,4 @@
-{% load static%}
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,21 +8,45 @@
 </head>
 <link rel="stylesheet" href="{% static 'css/homecss.css' %}">
 <script type="text/javascript" src="{% static 'js/homepage.js' %}"></script>
+<style>
+  .container--1 {
+      background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image1.jpg" with the path to your first image */
+  }
+  
+  .container--2 {
+      background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image2.jpg" with the path to your second image */
+  }
+  .container--3 {
+    background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image3.jpg" with the path to your third image */
+  }
+</style>
+<!-- <script type="text/javascript" src="MenuBar.js"></script>
+<script type="text/javascript" src="app.js"></script> -->
 <body>
+  <div id="root"></div>
     <div class="wrap1">
         <nav>
-            <div class="container1" onclick="myFunction(this)">
+            <div class="container1"onclick="toggleSidebar()">
                 <div class="bar1"></div>
                 <div class="bar2"></div>
                 <div class="bar3"></div>
-              </div>
+                
+              </div><div class="sidebar">
+                <br><br>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Help Support</a></li>
+                    <li><a href="#">About</a></li> 
+                    <li><a href="#">Logout</a></li> 
+                </ul>
+            </div>
         <ul class="menu">
             <li><a href="#">Home</a></li>
             <!-- <li><a href="#">Entry</a></li> -->
             <li><a href="#">Help support</a></li>
             <li><a href="#">About</a></li> 
         </ul>
-        <div class="hov"> <a onclick="window.location.href='login_as';"><button type="button"><span></span>Login</button></a></div>
+        <div class="hov"> <a onclick="window.location.href='login_as'"><button type="button"><span></span>Login</button></a></div>
         </nav>
     </div>
     <div class="header">
@@ -52,19 +76,19 @@
     <div class="paral">
         <section class="main">
 
-          <div class="wrap wrap--1" onclick="redirectToPage('page1.html')">
+          <div class="wrap wrap--1" >
             <div class="container container--1">
               <p>Dashboard</p>
             </div>
           </div>
           
-          <div class="wrap wrap--2" onclick="redirectToPage('page2.html')">
+          <div class="wrap wrap--2" >
             <div class="container container--2">
               <p>Attendance Entry</p>
             </div>
           </div>
           
-          <div class="wrap wrap--3" onclick="redirectToPage('page3.html')">
+          <div class="wrap wrap--3" >
             <div class="container container--3">
               <p>Report</p>
             </div>
@@ -119,6 +143,7 @@ Great Import And Export Tools <br>
           </p>
         </div>
     </div>
+   
       <script>
         class parallaxTiltEffect {
 
@@ -213,6 +238,13 @@ element: $('.wrap--3'),
 tiltEffect: 'reverse'
 });
       </script>    
-  
+  <script>
+    function toggleSidebar() {
+      var sidebar = document.querySelector('.sidebar');
+      sidebar.classList.toggle('sidebar-active');
+      var container = document.querySelector('.container1');
+      container.classList.toggle('change');
+  }
+  </script>
 </body>
 </html>

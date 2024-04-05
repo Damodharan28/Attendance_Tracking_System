@@ -80,9 +80,9 @@ WSGI_APPLICATION = 'ATS.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'attendance_tracking_system',
+        'NAME': 'attendance_tracking_schema',
         'USER': 'root',
-        'PASSWORD' : 'damo@mysql123',
+        'PASSWORD' : '1234',
         'HOST' : 'localhost',
         'PORT' : '3306',
     }

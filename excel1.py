@@ -4,121 +4,37 @@ from django.utils import timezone
 from tablib import Dataset
 # from ATS_app.models import ATTENDANCE_INFO
 
-# # Create a new Excel workbook
-# # wb = Workbook()
+wb = Workbook()
 
-# # Select the active worksheet
-# # ws = wb.active
-
-# current_date = timezone.now().date()
-# day_week = current_date.weekday()
-# print(day_week)
-# days={
-#      0 : "MONDAY",
-#      1 : "TUESDAY",
-#      2 : "WEDNESDAY",
-#      3 : "THURSDAY",
-#      4 : "FRIDAY"
-# }
-
-# dataset = Dataset()
-# imported_data = dataset.load(open('excels/timetable.xlsx', 'rb').read(),format='xlsx')
-
-# subjects =[]
-# for data in imported_data:
-#     if data[0] == days[day_week]:
-#         for i in range(1,9):
-#             subjects.append(data[i])
-# print(subjects)
-# wb = load_workbook('attendance.xlsx')
-
-# # Iterate over all sheets in the workbook
-# for sheet in wb.sheetnames:
-#     ws = wb[sheet]
-#     # Delete all rows in the sheet
-#     ws.delete_rows(1, ws.max_row)
-
-# # Define the headers
-# wb.append(["ATTENDANCE_ID","DATE","HOUR","SUBJECT_ID","STATUS"])
-
-# all_objects = ATTENDANCE_INFO.objects.all()
-
-# # Iterate over the objects and access their fields
-# for obj in all_objects:
-#     for i in range(1,9):
-#         wb.append(obj.ATTENDANCE_ID,current_date,i,subjects[i-1],"PRESENT") 
-
-# wb.save('attendance.xlsx')
-# print("created")
-# with open('excels/attendance.xlsx', 'rb') as excel_file:
-#         response = HttpResponse(excel_file.read(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-#         response['Content-Disposition'] = 'attachment; filename=attendance.xlsx'
-#         return response
+ws = wb.active
 
 
-# Save the workbook to a file
-from openpyxl import load_workbook
-from openpyxl.utils import get_column_letter
-from datetime import datetime
-import random
-
-# # Load the existing Excel file
-# excel_file = "attendance.xlsx"
-# wb = load_workbook(excel_file)
-# ws = wb.active
-
-# ws.append(["ATTENDANCE_ID", "DATE" ,"HOUR", "SUBJECT_ID", "STATUS"])
-
-# # Sample data generation (replace this with your actual data generation code)
-# # student_id=20001
-# attendance_id=50000
-# subjects = ["JCS1001", "JCS1002", "JCS1003", "JCS1004", "JCS1005", "JCS1006", "JCS1007", "JCS1008", "JCS1009", "JCS1010"]
-# for i in range(50):
-#     # student_id = student_id + i
-#     attendance_id = attendance_id + i
-#     for hour in range(1, 9):
-#         for subject_id_num in range(1, 11):
-#             # attendance_id = 50000 + (i * 10 + hour * 10 + subject_id_num)
-#             date = datetime.now().strftime("%Y-%m-%d")
-#             hour_str = str(hour)
-
-#             # Select 8 random subjects
-#             random_subjects = random.sample(subjects, 8)
-
-#             for hour, subject_id in enumerate(random_subjects, start=1):
-#                 hour_str = str(hour)
-#                 status = random.choice(["PRESENT", "ABSENT","ON DUTY"])
-
-#                 # Append data to the worksheet
-#                 row_data = [attendance_id, date, hour_str, subject_id, status]
-#                 ws.append(row_data)
-            
-
-# # Save the workbook back to the Excel file
-# wb.save(excel_file)
-# date = datetime.now().strftime("%Y-%m-%d")
-# print(date)
+ws.append(["ATTENDANCE_ID", "DATE" ,"HOUR", "SUBJECT_ID", "STATUS"])
 
 attendance = [
-    (20001, "Emma", "Johnson",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
-    (20002, "Liam", "Smith"),
-    (20003, "Olivia", "Williams"),
-    (20004, "Noah", "Brown"),
-    (20005, "Ava", "Jones"),
-    (20006, "William", "Davis"),
-    (20007, "Sophia", "Miller"),
-    (20008, "James", "Wilson"),
-    (20009, "Isabella", "Taylor"),
-    (20010, "Benjamin", "Anderson"),
-    (20011, "Mia", "Martinez"),
-    (20012, "Ethan", "Thomas"),
-    (20013, "Charlotte", "Garcia"),
-    (20014, "Amelia", "Hernandez"),
-    (20015, "Henry", "Robinson"),
-    (20016, "Ella", "Young"),
-    (20017, "Jacob", "Rodriguez"),
-    (20018, "Avery", "Lewis"),
-    (20019, "Sofia", "Hall"),
-    (20020, "Michael", "Allen"),
-    (20021, "Scarlett", "Scott"),
-    (20022, "Logan", "King")]
+    (20001, "Emma", "Johnson",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20002, "Liam", "Smith",'2024-04-03','PRESENT','PRESENT','PRESENT','ABSENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20003, "Olivia", "Williams",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20004, "Noah", "Brown",'2024-04-03','PRESENT','PRESENT','PRESENT','ABSENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20005, "Ava", "Jones",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20006, "William", "Davis",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20007, "Sophia", "Miller",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20008, "James", "Wilson",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','ABSENT','PRESENT','PRESENT','PRESENT'),
+    (20009, "Isabella", "Taylor",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20010, "Benjamin", "Anderson",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','ABSENT','PRESENT','PRESENT','PRESENT'),
+    (20011, "Mia", "Martinez",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20012, "Ethan", "Thomas",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20013, "Charlotte", "Garcia",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20014, "Amelia", "Hernandez",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','ABSENT','PRESENT','PRESENT'),
+    (20015, "Henry", "Robinson",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20016, "Ella", "Young",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','ABSENT','PRESENT','PRESENT'),
+    (20017, "Jacob", "Rodriguez",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20018, "Avery", "Lewis",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','ABSENT','PRESENT','PRESENT'),
+    (20019, "Sofia", "Hall",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20020, "Michael", "Allen",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','ABSENT','PRESENT','PRESENT'),
+    (20021, "Scarlett", "Scott",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT'),
+    (20022, "Logan", "King",'2024-04-03','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT','PRESENT')]
+
+for row in attendance:
+    ws.append(row)
+wb.save('attendance.xlsx')
