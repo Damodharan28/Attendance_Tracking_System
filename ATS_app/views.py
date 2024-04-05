@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
+from django.http import JsonResponse
 import random
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -17,6 +18,7 @@ from .forms import TeacherRegistrationForm
 from .forms import TeacherLoginForm
 from .forms import ParentRegistrationForm
 from .forms import ParentLoginForm
+from .forms import AddAttendanceForm
 
 from .models import PARENT
 from .models import STUDENT
@@ -37,6 +39,9 @@ from .resources import TEACHERResource
 from .resources import ATTENDANCEResource
 from django.contrib import messages
 from tablib import Dataset
+
+import pandas as pd
+import plotly.express as px
 
 from openpyxl import load_workbook
 from django.utils import timezone
@@ -412,49 +417,33 @@ def attendance_pie(request):
     return render(request, 'dashboard.html', context)
 
 def overall_attendance(request):
-    if request.method == 'POST':
-        date_str = request.POST.get('date')
+    # Fetch the attendance data
+    attendance_data = ATTENDANCE_DATA.objects.all()
 
-        date = datetime.strptime(date_str, '%Y-%m-%d').date()
+    # Convert attendance data to a DataFrame
+    attendance_df = pd.DataFrame(list(attendance_data.values()))
 
-        # Get all students
-        students = ATTENDANCE_DATA.objects.values('STUDENT_ID', 'FIRST_NAME', 'LAST_NAME').distinct()
+    # Calculate total present and absent students for each date
+    attendance_df['total_present'] = attendance_df.apply(lambda row: sum(row['HOUR1':'HOUR8'] == 'present'), axis=1)
+    attendance_df['total_absent'] = attendance_df.apply(lambda row: sum(row['HOUR1':'HOUR8'] == 'absent'), axis=1)
 
-        # Prepare data for the plot
-        student_data = {}
-        for student in students:
-            student_name = f"{student['FIRST_NAME']} {student['LAST_NAME']}"
-            student_data[student_name] = {'total_hours_present': 0}
-            attendance_data = ATTENDANCE_DATA.objects.filter(STUDENT_ID=student['STUDENT_ID'], DATE = date)
-            print(attendance_data)
-            total_hours_present = sum([
-                1 for attendance in attendance_data for i in range(1, 9) if getattr(attendance, f'HOUR{i}') == 'PRESENT'
-            ])
-            student_data[student_name]['total_hours_present'] = total_hours_present
+    # Group by date and calculate total present and absent students for each date
+    total_attendance = attendance_df.groupby('DATE').agg({
+    'total_present': 'sum',
+    'total_absent': 'sum'
+    }).reset_index()
+    fig = px.line(
+        total_attendance,
+        x='DATE', 
+        y=['total_present', 'total_absent'],
 
+        labels={'date': 'Date', 'value': 'Number of Students', 'variable': 'Attendance Status'},
+        title='Overall Attendance Trends')
+    chart = fig.to_html()
+    context ={'chart':chart}
 
-        # Plot the data
-        plt.figure(figsize=(12, 6))
-        student_names = list(student_data.keys())
-        total_hours_present = [student_data[name]['total_hours_present'] for name in student_names]
-        plt.bar(student_names, total_hours_present, color='skyblue')
-        plt.xlabel('Students')
-        plt.ylabel('Total Hours Present')
-        plt.title('Total Hours Present for Each Student')
-        plt.xticks(rotation=45, ha='right')
-        plt.ylim(0, 8)
-        plt.tight_layout()
-        # Save the plot as an image
-        plot_path = 'static/plots/overall_attendance_rate.png'
-        plt.savefig(plot_path)
-        plt.close()
-    
-        # Pass the path to the saved plot to the template
-        context = {'plot_path': plot_path}
-    
-        # Render the template with the plot
-        return render(request, 'overall_attendance.html', context)
-    return render(request,'overall_attendance.html')
+    return render(request, 'overall_attendance.html', context)
+    #return render(request,'overall_attendance.html')
 # def download_attendance_excel(request):
 #     current_date = timezone.now().date()
 #     day_week = current_date.weekday()
@@ -520,3 +509,58 @@ def dashboard(request):
 def attendance_entry(request):
     return render(request, 'attendance_entry.html')
 
+
+def add_attendance(request):
+    # form = AddAttendanceForm(request.POST or None)
+    departments = STUDENT_INFO.objects.values_list('DEPARTMENT', flat=True).distinct()
+    sections = STUDENT_INFO.objects.values_list('SECTION', flat=True).distinct()
+    if request.method == 'POST':
+        # form = AddAttendanceForm(request.POST)
+        # if form.is_valid():
+        # department = form.cleaned_data['department']
+        # section = form.cleaned_data['section']
+        # date = form.cleaned_data['date']
+        department = request.POST.get('department')
+        section = request.POST.get('section')
+        date = request.POST.get('date')
+        print(department)
+        print(section)
+        print(date)
+        students = STUDENT.objects.filter(student_info__DEPARTMENT=department, student_info__SECTION=section)
+        print(students)
+        for student in students:
+            attendance_data = ATTENDANCE_DATA(
+                STUDENT_ID=student,
+                FIRST_NAME=student.FIRST_NAME,
+                LAST_NAME=student.LAST_NAME,
+                DATE=date,
+                HOUR1=request.POST.get(f"hour1_{student.STUDENT_ID}"),
+                HOUR2=request.POST.get(f"hour2_{student.STUDENT_ID}"),
+                HOUR3=request.POST.get(f"hour3_{student.STUDENT_ID}"),
+                HOUR4=request.POST.get(f"hour4_{student.STUDENT_ID}"),
+                HOUR5=request.POST.get(f"hour5_{student.STUDENT_ID}"),
+                HOUR6=request.POST.get(f"hour6_{student.STUDENT_ID}"),
+                HOUR7=request.POST.get(f"hour7_{student.STUDENT_ID}"),
+                HOUR8=request.POST.get(f"hour8_{student.STUDENT_ID}"),
+            )
+            attendance_data.save()
+        return render(request, 'success.html')
+    return render(request, 'add_attendance.html', {'departments': departments, 'sections': sections})
+
+
+
+def fetch_students(request):
+    department = request.GET.get('department')
+    section = request.GET.get('section')
+    print("working")
+    students = STUDENT.objects.filter(student_info__DEPARTMENT=department, student_info__SECTION=section)
+    student_data = []
+    for student in students:
+        student_data.append({
+            'student_id': student.STUDENT_ID,
+            'first_name': student.FIRST_NAME,
+            'last_name': student.LAST_NAME
+        })
+    print(student_data)
+    
+    return JsonResponse(student_data, safe=False)
