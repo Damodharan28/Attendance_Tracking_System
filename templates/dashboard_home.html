@@ -87,20 +87,7 @@
 <title>Dashboard</title>
 <!-- <link type="text/css" rel="stylesheet" href="{% static 'css/teacher_page.css' %}"> -->
 <style>
-    .container--1 {
-        background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image1.jpg" with the path to your first image */
-    }
     
-    .container--2 {
-        background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image2.jpg" with the path to your second image */
-    }
-    .container--3 {
-      background-image: url("{% static 'images/image1.jpg' %}"); 
-    }
-     .container--4 {
-        background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image3.jpg" with the path to your third image */
-    }
-
 
     body {
         font-family: Arial, sans-serif;
@@ -205,7 +192,7 @@
         position: relative;
         transform: rotateX(calc(var(--rX) * 1deg)) rotateY(calc(var(--rY) * 1deg));
       
-        background: linear-gradient(hsla(0, 0%, 100%, .1), hsla(0, 0%, 100%, .1)), url("https://images.unsplash.com/photo-1559113513-d5e09c78b9dd?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=1080&fit=max&ixid=eyJhcHBfaWQiOjF9");
+        background: linear-gradient(hsla(0, 0%, 100%, .1), hsla(0, 0%, 100%, .1));
         background-position: var(--bX) var(--bY);
         background-size: 40rem auto;
         box-shadow: 0 0 3rem .5rem hsla(0, 0%, 0%, .2);
@@ -299,6 +286,19 @@
       }
 
 
+      .container--1 {
+        background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image1.jpg" with the path to your first image */
+    }
+    
+    .container--2 {
+        background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image2.jpg" with the path to your second image */
+    }
+    .container--3 {
+      background-image: url("{% static 'images/image1.jpg' %}"); 
+    }
+     .container--4 {
+        background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image3.jpg" with the path to your third image */
+    }
 
 
 </style>

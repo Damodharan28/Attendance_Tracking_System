@@ -36,4 +36,5 @@ urlpatterns = [
     path('help_support/', views.help_support, name='help_support'),
     path('about_us/', views.about_us, name='about_us'),
     path('direct_or_excel/', views.direct_or_excel, name='direct_or_excel'),
+    path('generate_report/', views.generate_report, name='generate_report'),
 ]

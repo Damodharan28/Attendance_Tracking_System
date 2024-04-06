@@ -45,6 +45,7 @@ class TEACHER(models.Model):
         return f"{self.TEACHER_ID}"
 
 class ATTENDANCE_DATA(models.Model):
+    id = models.AutoField(primary_key=True)
     STUDENT_ID = models.ForeignKey(STUDENT, on_delete=models.CASCADE)
     FIRST_NAME = models.CharField(max_length=255 , null=False)
     LAST_NAME = models.CharField(max_length=255, default='')

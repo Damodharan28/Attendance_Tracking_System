@@ -699,3 +699,73 @@ def attendance_summary(request):
 
     context = {'chart': chart, 'summary': summary}
     return render(request, 'attendance_summary.html', context)
+from django.http import HttpResponse
+from django.template.loader import get_template
+from django.conf import settings
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+from django.shortcuts import render
+from django.http import HttpResponse, FileResponse
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet
+import plotly.graph_objs as go
+from plotly.offline import plot
+import io
+from datetime import datetime
+
+def generate_report(request):
+    if request.method == 'POST':
+        student_id = request.POST.get('student_id')
+        
+        # Calculate summary for the specified student and date range
+        summary = calculate_summary(student_id)
+
+        # Create a Plotly pie chart
+        labels = ['Days Present', 'Days Absent']
+        values = [summary['total_hours_attended'], summary['total_no_of_hours'] - summary['total_hours_attended']]
+        fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.3)])
+        chart_div = plot(fig, output_type='div', include_plotlyjs=False)
+        fig.update_layout(width=456, height=636)
+
+        # Generate PDF report
+        buf = io.BytesIO()
+        doc = SimpleDocTemplate(buf, pagesize=letter)
+        styles = getSampleStyleSheet()
+        elements = []
+
+        # Title
+        elements.append(Paragraph("Attendance Report", styles['Title']))
+
+        elements.append(Spacer(1, 12))
+
+        # Plotly Pie Chart
+        elements.append(Paragraph("Attendance Summary", styles['Heading2']))
+
+        elements.append(Paragraph(f"Student ID: {student_id}", styles['Heading1']))
+        elements.append(Paragraph(f"Total Number of days: {summary['total_days']}", styles['Heading1']))
+        elements.append(Paragraph(f"Total Number of Hours: {summary['total_no_of_hours']}", styles['Heading1']))
+        elements.append(Paragraph(f"Number of Hours Attended: {summary['total_hours_attended']}", styles['Heading1']))
+        elements.append(Paragraph(f"Percentage: {summary['percentage']}", styles['Heading1']))
+
+        # Convert the Plotly chart to an image and add it to the PDF
+        img_bytes = fig.to_image(format="png")
+        img_stream = io.BytesIO(img_bytes)
+        chart_image = Image(img_stream)
+        chart_image = Image(img_stream, width=456, height=636)
+        elements.append(chart_image)
+
+        elements.append(Spacer(1, 12))
+
+        # Add elements to the PDF document
+        doc.build(elements)
+
+        # Reset buffer position and return FileResponse
+        buf.seek(0)
+        return FileResponse(buf, as_attachment=True, filename='report.pdf')
+    else:
+        # Render HTML template for initial page load
+        return render(request, 'generate_report.html')

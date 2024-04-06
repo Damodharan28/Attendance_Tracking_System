@@ -7,11 +7,11 @@
 <title>Teacher Dashboard</title>
 <link type="text/css" rel="stylesheet" href="{% static 'css/parent_page.css' %}">
 <style>
-    .container--2 {
+    .container--1 {
         background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image1.jpg" with the path to your first image */
     }
     
-    .container--3 {
+    .container--2 {
         background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image2.jpg" with the path to your second image */
     }
     
@@ -31,9 +31,15 @@
     </div>
 </div> -->
 <body>
-    <header>
-        <h1 style="color: rgba(255, 2, 123, 1);background-color:rgba(16, 4, 64, 1)">Attendance Tracking System</h1>
-    </header>
+  <div class="wrap2">
+    <h1 style="color:  rgba(255, 2, 123, 1);">Attendance Tracking System</h1>
+      <!-- <ul class="menu">
+          <li><a href="/homepage">Home</a></li>
+           <li><a href="#">Entry</a></li> 
+          <li><a href="#">Help support</a></li>
+          <li><a href="#">About</a></li> 
+      </ul> -->
+  </div>
 <!-- <div class="container">
     <div class="card">
         <h2>Attendance Entry</h2>
@@ -59,14 +65,14 @@
             </div>
           </div> -->
           
-          <div class="wrap wrap--2" onclick="redirect('attendance_entry');">
-            <div class="container container--2">
+          <div class="wrap wrap--1" onclick="redirect('attendance_entry');">
+            <div class="container container--1">
               <p>Excel Attendance Entry</p>
             </div>
           </div>
           
-          <div class="wrap wrap--3" onclick="redirect('add_attendance');">
-            <div class="container container--3">
+          <div class="wrap wrap--2" onclick="redirect('add_attendance');">
+            <div class="container container--2">
               <p>Direct Attendance Entry</p>
             </div>
           </div>
