@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Attendance Summary</title>
+    <!-- Include Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <!-- <script>
+        var data = {{chart|safe}};
+        var layout = {
+            title: 'Attendance Summary',
+        };
+        Plotly.newPlot('chart', data, layout);
+    </script> -->
+</head>
+
+<body>
+    <form action="{% url 'attendance_summary' %}" method="get">
+        {% csrf_token %}
+        <label for="student_id">Student ID:</label>
+        <input type="text" id="student_id" name="student_id">
+        <br>
+        <br>
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date">
+
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date">
+        <br>
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+    <h1>Attendance Summary</h1>
+    <p>Student ID: {{ summary.student_id }}</p>
+    <p>Total Number of Days: {{ summary.total_days }}</p>
+    <p>Total Number of Hours: {{ summary.total_no_of_hours }}</p>
+    <p>Number of Hours Present: {{ summary.total_hours_attended }}</p>
+    <p>Percentage of Attendance: {{ summary.percentage }}%</p>
+
+    <!-- Display the Plotly pie chart -->
+    <div id="chart">{{ chart|safe }}</div>
+
+    
+</body>
+</html>

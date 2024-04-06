@@ -28,5 +28,12 @@ urlpatterns = [
     path('dashboard/',views.dashboard, name='dashboard'),
     path('overall_attendance/',views.overall_attendance, name='overall_attendance'),
     path('add_attendance/',views.add_attendance,name='add_attendance'),
+    path('daily_attendance',views.daily_attendance,name='daily_attendance'),
+    path('attendance_status',views.attendance_status,name='attendance_status'),
+    path('attendance_tracking',views.attendance_tracking,name='attendance_tracking'),
+    path('attendance_summary',views.attendance_summary,name='attendance_summary'),
     path('fetch_students/', views.fetch_students, name='fetch_students'),
+    path('help_support/', views.help_support, name='help_support'),
+    path('about_us/', views.about_us, name='about_us'),
+    path('direct_or_excel/', views.direct_or_excel, name='direct_or_excel'),
 ]

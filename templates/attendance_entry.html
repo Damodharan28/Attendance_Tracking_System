@@ -11,10 +11,11 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
+           
         }
 
         header {
-            background-color: #333;
+            background-color:rgba(16, 4, 64, 1);
             color: white;
             text-align: center;
             padding: 10px 0;
@@ -22,9 +23,10 @@
 
         .menu {
             display: flex;
-            background-color: #333;
+            background-color:rgba(16, 4, 64, 1);
             color: white;
             padding: 10px;
+            text-emphasis-color: rgba(255, 2, 123, 1);
         }
 
         .menu button {
@@ -38,12 +40,31 @@
         }
 
         .menu button:hover {
-            background-color: #555;
+            background-color: rgb(33, 15, 106);
         }
 
         .content {
             padding: 20px;
+
+           text-align: center;
+            justify-content: center;
+          margin-left: 500px;
+         
+            /* Aligning items to the top   min-height: 100vh;
+            background-color: #f0f0f0;
+*/
+           
+
+            background-color: #d8cfcf;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 500px;
+            margin-top: 50px; /* Adjusted margin */
+            margin-bottom: 50px; 
+            border: 3px dotted #09060c;
         }
+     
+
 
         .content h2 {
             border-bottom: 1px solid #ccc;
@@ -53,6 +74,9 @@
 
         form {
             display: none;
+           
+          
+           
         }
 
         form.active {
@@ -66,10 +90,11 @@
 
         input[type="file"] {
             margin-bottom: 10px;
+           margin-left: 55px;
         }
 
         input[type="submit"] {
-            background-color: #333;
+            background-color:rgba(16, 4, 64, 1);
             color: white;
             border: none;
             padding: 10px 20px;
@@ -78,7 +103,14 @@
         }
 
         input[type="submit"]:hover {
-            background-color: #555;
+            /* background-color: rgba(255, 2, 123, 1);*/
+            background: rgba(255, 2, 123, 1);
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(255, 2, 123, 1),
+                        0 0 25px rgba(255, 2, 123, 1),
+                        0 0 50px rgba(255, 2, 123, 1),
+                        0 0 100px rgba(255, 2, 123, 1);
         }
         .alert-danger{
             color : red;
@@ -89,12 +121,34 @@
         .alert-info{
             color: orange;
         }
+        .footer {
+            background-color: rgba(16, 4, 64, 1);
+            color: white;
+            padding-top: 40px;
+            padding-bottom: 75px;
+            display: flex;
+            justify-content: space-around;
+          }
+          
+          .feau-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+          }
+          
+          .feau {
+            padding-left: 100px;
+          }
+          
+          .ben {
+            padding-right: 100px;
+          }
     </style>
 </head>
 
 <body>
     <header>
-        <h1>Attendance Tracking System</h1>
+        <h1 style="color: rgba(255, 2, 123, 1);background-color:rgba(16, 4, 64, 1)">Attendance Tracking System</h1>
     </header>
     <div class="menu">
         <button onclick="toggle('dataEntry')">Data Entry</button>
@@ -137,6 +191,38 @@
             <h2>Please upload excel file</h2>
         </form>
         </div>
+        <div class="footer">    
+            <div class="feau-wrapper">
+              <h5 style="margin-left: 100px;">FEATURES:</h5>
+              <p class="feau">
+                
+                <br>
+                <br>
+                Fast and Easy Attendance Entry.<br>
+                <br>
+                Students, Class and Grade Dashboards<br>
+                <br>
+                
+                Customizable Attendance Reporting<br>
+                <br>
+                Simple Data Export
+                <br></p>
+                </div>
+                <div class="ben">
+                  <p class="fit">
+                   <h5> BENEFITS: </h5>
+        <br><br>
+        Track Attendance From Anywhere <br><br>
+        
+        Perfect For Any Class Or Group <br><br>
+        Teacher Parent Messaging System<br>
+                <br>
+        
+        Great Import And Export Tools <br>
+                  </p>
+                </div>
+            </div>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {

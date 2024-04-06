@@ -1,35 +1,39 @@
-
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard</title>
-<link type="text/css" rel="stylesheet" href="{% static 'css/teacher_page.css' %}">
+<title>Teacher Dashboard</title>
+<link type="text/css" rel="stylesheet" href="{% static 'css/parent_page.css' %}">
 <style>
-    .container--1 {
+    .container--2 {
         background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image1.jpg" with the path to your first image */
     }
     
-    .container--2 {
+    .container--3 {
         background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image2.jpg" with the path to your second image */
     }
-    .container--3 {
-      background-image: url("{% static 'images/image1.jpg' %}"); /* Replace "image3.jpg" with the path to your third image */
-    }
+    
 </style>
 </head>
 <body>
-    <div class="wrap2">
-      <h1 style="color: rgba(255, 2, 123, 1);;">Attendance Tracking System</h1>
-        <ul class="menu">
-            <li><a href="/homepage">Home</a></li>
-            <!-- <li><a href="#">Entry</a></li> -->
-            <li><a href="#">Help support</a></li>
-            <li><a href="#">About</a></li> 
-        </ul>
+<!-- <div class="container">
+    <div class="card">
+        <h2>Statistics</h2>
+        <p>View attendance statistics</p>
+        <a href="/statistics">View Statistics</a>
     </div>
+    <div class="card">
+        <h2>Report</h2>
+        <p>Generate attendance report</p>
+        <a href="/report">Generate Report</a>
+    </div>
+</div> -->
+<body>
+    <header>
+        <h1 style="color: rgba(255, 2, 123, 1);background-color:rgba(16, 4, 64, 1)">Attendance Tracking System</h1>
+    </header>
 <!-- <div class="container">
     <div class="card">
         <h2>Attendance Entry</h2>
@@ -49,21 +53,21 @@
     <div class="paral">
         <section class="main">
 
-          <div class="wrap wrap--1" onclick="redirect('direct_or_excel');">
+          <!-- <div class="wrap wrap--1" onclick="redirectToPage('page1.html')">
             <div class="container container--1">
               <p>Attendance Entry</p>
             </div>
-          </div>
+          </div> -->
           
-          <div class="wrap wrap--2" onclick="redirect('dashboard');">
+          <div class="wrap wrap--2" onclick="redirect('attendance_entry');">
             <div class="container container--2">
-              <p>Statistics</p>
+              <p>Excel Attendance Entry</p>
             </div>
           </div>
           
-          <div class="wrap wrap--3" onclick="redirectToPage('page3.html')">
+          <div class="wrap wrap--3" onclick="redirect('add_attendance');">
             <div class="container container--3">
-              <p>Report</p>
+              <p>Direct Attendance Entry</p>
             </div>
           </div>
           <script>

@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Attendance</title>
     <style>
+        *{
+            padding: 0px;
+            margin: 0px;
+        }
+        h1{
+            background-color:rgba(16, 4, 64, 1);
+            color:rgba(255, 2, 123, 1);
+            text-align: center;
+            padding: 50px 0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -27,10 +37,37 @@
         input[type="radio"] {
             margin-right: 5px;
         }
+        button{
+            background-color:rgba(16, 4, 64, 1);
+            color: white;
+            border: 1px;
+            padding: 20px 35px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-left: 725px;
+            font-size: 15px;
+            font-family: bold;
+
+        }
+
+        button:hover {
+            /* background-color: rgba(255, 2, 123, 1);*/
+            background: rgba(255, 2, 123, 1);
+            color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(255, 2, 123, 1),
+                        0 0 25px rgba(255, 2, 123, 1),
+                        0 0 50px rgba(255, 2, 123, 1),
+                        0 0 100px rgba(255, 2, 123, 1);
+        }
     </style>
 </head>
+<header>
+    <h1 style="color: rgba(255, 2, 123, 1);background-color:rgba(16, 4, 64, 1)">Attendance Tracking System</h1>
+</header>
+<br>
+<br>
 <body>
-    <h1>Add Attendance</h1>
     <form method="post">
         {% csrf_token %}
         <label for="department">Department:</label>
@@ -94,42 +131,42 @@
                                 <td>${student.first_name}</td>
                                 <td>${student.last_name}</td>
                                 <td>
-                                    <input type="radio" name="hour1_${student.student_id}" value="PRESENT"> Present<br>
+                                    <input type="radio" name="hour1_${student.student_id}" value="PRESENT" checked> Present<br>
                                     <input type="radio" name="hour1_${student.student_id}" value="ABSENT"> Absent<br>
                                     <input type="radio" name="hour1_${student.student_id}" value="ON DUTY"> Waiting<br>
                                 </td>
                                 <td>
-                                    <input type="radio" name="hour2_${student.student_id}" value="PRESENT"> Present<br>
+                                    <input type="radio" name="hour2_${student.student_id}" value="PRESENT" checked> Present<br>
                                     <input type="radio" name="hour2_${student.student_id}" value="ABSENT"> Absent<br>
                                     <input type="radio" name="hour2_${student.student_id}" value="ON DUTY"> Waiting<br>
                                 </td>
                                 <td>
-                                    <input type="radio" name="hour3_${student.student_id}" value="PRESENT"> Present<br>
+                                    <input type="radio" name="hour3_${student.student_id}" value="PRESENT" checked> Present<br>
                                     <input type="radio" name="hour3_${student.student_id}" value="ABSENT"> Absent<br>
                                     <input type="radio" name="hour3_${student.student_id}" value="ON DUTY"> Waiting<br>
                                 </td>
                                 <td>
-                                    <input type="radio" name="hour4_${student.student_id}" value="PRESENT"> Present<br>
+                                    <input type="radio" name="hour4_${student.student_id}" value="PRESENT" checked> Present<br>
                                     <input type="radio" name="hour4_${student.student_id}" value="ABSENT"> Absent<br>
                                     <input type="radio" name="hour4_${student.student_id}" value="ON DUTY"> Waiting<br>
                                 </td>
                                 <td>
-                                    <input type="radio" name="hour5_${student.student_id}" value="PRESENT"> Present<br>
+                                    <input type="radio" name="hour5_${student.student_id}" value="PRESENT" checked> Present<br>
                                     <input type="radio" name="hour5_${student.student_id}" value="ABSENT"> Absent<br>
                                     <input type="radio" name="hour5_${student.student_id}" value="ON DUTY"> Waiting<br>
                                 </td>
                                 <td>
-                                    <input type="radio" name="hour6_${student.student_id}" value="PRESENT"> Present<br>
+                                    <input type="radio" name="hour6_${student.student_id}" value="PRESENT" checked> Present<br>
                                     <input type="radio" name="hour6_${student.student_id}" value="ABSENT"> Absent<br>
                                     <input type="radio" name="hour6_${student.student_id}" value="ON DUTY"> Waiting<br>
                                 </td>
                                 <td>
-                                    <input type="radio" name="hour7_${student.student_id}" value="PRESENT"> Present<br>
+                                    <input type="radio" name="hour7_${student.student_id}" value="PRESENT" checked> Present<br>
                                     <input type="radio" name="hour7_${student.student_id}" value="ABSENT"> Absent<br>
                                     <input type="radio" name="hour7_${student.student_id}" value="ON DUTY"> Waiting<br>
                                 </td>
                                 <td>
-                                    <input type="radio" name="hour8_${student.student_id}" value="PRESENT"> Present<br>
+                                    <input type="radio" name="hour8_${student.student_id}" value="PRESENT" checked> Present<br>
                                     <input type="radio" name="hour8_${student.student_id}" value="ABSENT"> Absent<br>
                                     <input type="radio" name="hour8_${student.student_id}" value="ON DUTY"> Waiting<br>
                                 </td>

@@ -7,10 +7,14 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
-from django.db.models import Sum, Case, When, Value, IntegerField , F
+from django.db.models import Sum, Case, When, Value, IntegerField , F , ExpressionWrapper, FloatField
 from datetime import datetime
 from django.db.models import Count
 from matplotlib import pyplot as plt
+
+
+
+from django.db import models
 
 from .forms import StudentRegistrationForm
 from .forms import StudentLoginForm
@@ -39,9 +43,10 @@ from .resources import TEACHERResource
 from .resources import ATTENDANCEResource
 from django.contrib import messages
 from tablib import Dataset
-
+import plotly.graph_objects as go
 import pandas as pd
 import plotly.express as px
+from plotly.offline import plot
 
 from openpyxl import load_workbook
 from django.utils import timezone
@@ -425,8 +430,8 @@ def overall_attendance(request):
     attendance_df = pd.DataFrame(list(attendance_data.values()))
 
     # Calculate total present and absent students for each date
-    attendance_df['total_present'] = attendance_df.apply(lambda row: sum(row['HOUR1':'HOUR8'] == 'present'), axis=1)
-    attendance_df['total_absent'] = attendance_df.apply(lambda row: sum(row['HOUR1':'HOUR8'] == 'absent'), axis=1)
+    attendance_df['total_present'] = attendance_df.apply(lambda row: sum(row['HOUR1':'HOUR8'] == 'PRESENT'), axis=1)
+    attendance_df['total_absent'] = attendance_df.apply(lambda row: sum(row['HOUR1':'HOUR8'] == 'ABSENT'), axis=1)
 
     # Group by date and calculate total present and absent students for each date
     total_attendance = attendance_df.groupby('DATE').agg({
@@ -445,48 +450,114 @@ def overall_attendance(request):
 
     return render(request, 'overall_attendance.html', context)
     #return render(request,'overall_attendance.html')
-# def download_attendance_excel(request):
-#     current_date = timezone.now().date()
-#     day_week = current_date.weekday()
 
-#     days={
-#          0 : "MONDAY",
-#          1 : "TUESDAY",
-#          2 : "WEDNESDAY",
-#          3 : "THURSDAY",
-#          4 : "FRIDAY"
-#     }
+def attendance_status(request):
+    if request.method == 'POST':
+        selected_date = request.POST.get('date')
+        # if selected_date == '' or len(queryset) == 0:
+        #     error = {'error' : 'No data on this date'}
+        #     return render(request, 'attendance_status.html', error)
+        # Filter the queryset to get attendance data for the specific date
+        queryset = ATTENDANCE_DATA.objects.filter(DATE=selected_date)
 
-#     dataset = Dataset()
-#     imported_data = dataset.load(open('excels/timetable.xlsx', 'rb').read(),format='xlsx')
+        # Convert the attendance data to a pandas DataFrame
+        df = pd.DataFrame(queryset.values('STUDENT_ID', 'HOUR1', 'HOUR2', 'HOUR3', 'HOUR4', 'HOUR5', 'HOUR6', 'HOUR7', 'HOUR8'))
 
-#     subjects =[]
-#     for data in imported_data:
-#         if data[0] == days[day_week]:
-#             for i in range(1,9):
-#                 subjects.append(data[i])
+        # Calculate total hours attended per student
+        df['total_hours'] = df[['HOUR1', 'HOUR2', 'HOUR3', 'HOUR4', 'HOUR5', 'HOUR6', 'HOUR7', 'HOUR8']].apply(lambda row: row.str.count('PRESENT')).sum(axis=1)
 
-#     wb = load_workbook('excels/attendance.xlsx')
+        # Classify students as 'Present' or 'Absent' based on total hours attended
+        df['status'] = df['total_hours'].apply(lambda x: 'PRESENT' if x >= 4 else 'ABSENT')
 
-#     # Iterate over all sheets in the workbook
-#     for sheet in wb.sheetnames:
-#         ws = wb[sheet]
-#         # Delete all rows in the sheet
-#         ws.delete_rows(1, ws.max_row)
+        # Calculate the count of 'Present' and 'Absent' students
+        status_counts = df['status'].value_counts()
 
-#     # Define the headers
-#     wb.append(["ATTENDANCE_ID","DATE","HOUR","SUBJECT_ID","STATUS"])
+        # Create the pie chart
+        fig = px.pie(names=status_counts.index, values=status_counts.values, title=f'Attendance Status Distribution on {selected_date}')
 
-#     all_objects = ATTENDANCE_INFO.objects.all()
+        # Convert the plot to HTML
+        chart = fig.to_html()
+        context = {'chart': chart}
+        return render(request, 'attendance_status.html', context)
+    return render(request, 'attendance_status.html')
 
-#     # Iterate over the objects and access their fields
-#     for obj in all_objects:
-#         for i in range(1,9):
-#             wb.append(obj.ATTENDANCE_ID,current_date,i,subjects[i-1],"PRESENT") 
+def attendance_tracking(request):
+    if request.method == 'POST':
+        selected_date = request.POST.get('date')
+        # if selected_date == '' or len(queryset) == 0:
+        #     error = {'error' : 'No data on this date'}
+        #     return render(request, 'attendance_status.html', error)
+        # Filter the queryset to get attendance data for the specific date
+        # Filter the attendance data for the specific date
+        attendance_data = ATTENDANCE_DATA.objects.filter(DATE=selected_date)
+        
+        # Filter the attendance data to get only the students who are absent in the afternoon session
+        absent_students = attendance_data.exclude(HOUR5='PRESENT', HOUR6='PRESENT', HOUR7='PRESENT', HOUR8='PRESENT')
 
-#     wb.save('excels/attendance.xlsx')
-#     print("created")    
+        # Create a list of student names and the total number of hours they are absent in the afternoon session
+        student_names = []
+        hours_absent = []
+        for student in absent_students:
+            total_absent_hours = sum([1 for hour in ['HOUR5', 'HOUR6', 'HOUR7', 'HOUR8'] if getattr(student, hour) != 'PRESENT'])
+            if total_absent_hours > 0:
+                student_names.append(student.FIRST_NAME)
+                hours_absent.append(total_absent_hours)
 
+        # Create hover text with student name and hours absent
+        hover_text = [f'{name}<br>Hours Absent: {hours}' for name, hours in zip(student_names, hours_absent)]
+
+        # Create the Plotly bar chart with a bar for each student
+        fig = go.Figure(data=[go.Bar(x=student_names, y=hours_absent, hovertext=hover_text, hoverinfo='text', marker_color='orange')])
+        fig.update_layout(title=f'Number of Hours Students are Absent in Afternoon Session on {selected_date}',
+                          xaxis_title='Student Name',
+                          yaxis_title='Number of Hours Absent',
+                          bargap=0.1)
+
+        # Convert the Plotly chart to HTML
+        chart = plot(fig, output_type='div', include_plotlyjs=False)
+        context = {'chart': chart}
+        return render(request, 'attendance_tracking.html', context)
+    return render(request, 'attendance_tracking.html')
+
+
+def daily_attendance(request):
+    if request.method == 'POST':
+    # Assuming 'date' and 'selected_date' are provided as inputs
+        selected_date = request.POST.get('date')
+        if selected_date == '' or None:
+            error = {'error' : 'No data on this date'}
+            return render(request, 'daily_attendance.html', error)
+
+        attendance_data = ATTENDANCE_DATA.objects.filter(DATE=selected_date).values('FIRST_NAME', 'HOUR1', 'HOUR2', 'HOUR3', 'HOUR4', 'HOUR5', 'HOUR6', 'HOUR7', 'HOUR8')
+        if selected_date == '' or len(attendance_data) == 0:
+            error = {'error' : 'No data on this date'}
+            return render(request, 'daily_attendance.html', error)
+        # Convert the attendance data to a pandas DataFrame
+        df = pd.DataFrame(attendance_data)
+        print(df)
+        # Calculate total hours attended per student
+        df['total_hours'] = df[['HOUR1', 'HOUR2', 'HOUR3', 'HOUR4', 'HOUR5', 'HOUR6', 'HOUR7', 'HOUR8']].apply(lambda row: row.str.count('PRESENT' or 'ON DUTY')).sum(axis=1)
+
+        # Get student names and total hours
+        student_names = df['FIRST_NAME']
+        total_hours = df['total_hours']
+
+        for student in attendance_data:
+            print(student_names,total_hours)
+        # Create a Plotly bar chart
+        fig = px.bar(x=student_names, y=total_hours, labels={'x': 'Student Name', 'y': 'Total Hours Attended'},
+                     title=f'Total Hours Attended per Student on {selected_date}')
+        fig.update_layout(xaxis={'categoryorder': 'total ascending', 'type': 'category', 'tickangle': 45,
+                                 'title': 'Student Name', 'automargin': True},
+                          yaxis={'title': 'Total Hours Attended', 'range': [0, 8]},
+                          width=1200, height=600, margin={'l': 50, 'r': 50, 't': 50, 'b': 50})
+
+        # Convert the Plotly chart to JSON format for rendering in the template
+        chart = fig.to_html()
+
+        context = {'chart': chart}
+        return render(request, 'daily_attendance.html', context)
+    return render(request, 'daily_attendance.html')
 #-----------------------------------------------------------------------------------------
 def home(request):
     return render(request,'index.html')
@@ -505,6 +576,15 @@ def student_dashboard(request):
 
 def dashboard(request):
     return render(request,'dashboard_home.html')
+
+def about_us(request):
+    return render(request,'about1.html')
+
+def help_support(request):
+    return render(request, 'helpsupport.html')
+
+def direct_or_excel(request):
+    return render(request, 'direct_or_excel.html')
 
 @login_required
 def attendance_entry(request):
@@ -548,8 +628,6 @@ def add_attendance(request):
         return render(request, 'success.html')
     return render(request, 'add_attendance.html', {'departments': departments, 'sections': sections})
 
-
-
 def fetch_students(request):
     department = request.GET.get('department')
     section = request.GET.get('section')
@@ -565,3 +643,59 @@ def fetch_students(request):
     print(student_data)
     
     return JsonResponse(student_data, safe=False)
+
+from django.db.models import Count, Case, When, IntegerField
+from django.db.models import Q
+
+
+def calculate_summary(student_id, start_date=None, end_date=None):
+    # Filter the attendance data for the specific student and date range
+    if start_date and end_date:
+        attendance_data = ATTENDANCE_DATA.objects.filter(STUDENT_ID=student_id, DATE__range=[start_date, end_date])
+    else:
+        attendance_data = ATTENDANCE_DATA.objects.filter(STUDENT_ID=student_id)
+    
+    if not attendance_data:
+        return {
+            'student_id': student_id,
+            'total_days': 0,
+            'total_no_of_hours': 0,
+            'total_hours_attended': 0,
+        }
+    # Convert the filtered attendance data to a pandas DataFrame
+    df = pd.DataFrame(list(attendance_data.values('DATE', 'HOUR1', 'HOUR2', 'HOUR3', 'HOUR4', 'HOUR5', 'HOUR6', 'HOUR7', 'HOUR8')))
+    
+    # Omit duplicate dates and consider only HOUR1 with values present or absent
+    unique_dates_attended = df['DATE'].unique()
+    total_days = len(unique_dates_attended)
+    
+    # Calculate the total number of hours attended
+    total_hours_attended = 0
+    for date in unique_dates_attended:
+        hours_present = (df[df['DATE'] == date].iloc[:, 1:] == 'PRESENT').astype(int).sum().sum()
+        total_hours_attended += hours_present
+    print(total_hours_attended)
+    percentage = (total_hours_attended / (total_days * 8)) * 100
+    return {
+        'student_id': student_id,
+        'total_days': total_days,
+        'total_no_of_hours': total_days * 8,
+        'total_hours_attended': total_hours_attended,
+        'percentage':percentage,
+    } 
+def attendance_summary(request):
+    student_id = request.GET.get('student_id')  # Replace with the actual student ID
+    start_date = request.GET.get('start_date')  # Get start date from request
+    end_date = request.GET.get('end_date')  # Get end date from request
+
+    # Calculate summary for the specified student and date range
+    summary = calculate_summary(student_id, start_date, end_date)
+
+    # Create a Plotly pie chart
+    labels = ['Days Present', 'Days Absent']
+    values = [summary['total_hours_attended'], summary['total_no_of_hours'] - summary['total_hours_attended']]
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=0.3)])
+    chart = plot(fig, output_type='div', include_plotlyjs=False)
+
+    context = {'chart': chart, 'summary': summary}
+    return render(request, 'attendance_summary.html', context)

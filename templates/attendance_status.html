@@ -1,19 +1,18 @@
-{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Attendance Bar Chart</title>
+    <title>Attendance Status</title>
 </head>
 <body>
-    <form action="{% url 'daily_attendance' %}" method="post">
+    <form action="{% url 'attendance_status' %}" method="post">
         {% csrf_token %}
         <label for="date">Select Date:</label>
         <input type="date" id="date" name="date">
     
         <input type="submit" value="Submit">
     </form>
-    <h1>Overall Attendance</h1>
+    <h1>Overall Attendance Status</h1>
     {{error}}
     {{chart|safe}}
 </body>
