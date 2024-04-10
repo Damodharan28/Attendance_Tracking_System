@@ -7,10 +7,23 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.decorators import login_required
 from django.db.utils import IntegrityError
-from django.db.models import Sum, Case, When, Value, IntegerField , F , ExpressionWrapper, FloatField
-from datetime import datetime
-from django.db.models import Count
 from matplotlib import pyplot as plt
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet
+from io import BytesIO
+from django.http import FileResponse
+from django.http import HttpResponse
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+from django.shortcuts import render
+from django.http import HttpResponse, FileResponse
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
+from reportlab.lib.styles import getSampleStyleSheet
+import plotly.graph_objs as go
+from plotly.offline import plot
+import io
 
 
 
@@ -27,19 +40,12 @@ from .forms import AddAttendanceForm
 from .models import PARENT
 from .models import STUDENT
 from .models import STUDENT_INFO
-# from .models import TEACHER_INFO
-# from .models import SUBJECT
 from .models import TEACHER
-# from .models import ATTENDANCE_INFO
 from .models import ATTENDANCE_DATA
 
 from .resources import PARENTResource
-# from .resources import STUDENTResource
-# from .resources import STUDENT_INFOResource
 from .resources import StudentAndInfoResource
-# from .resources import SUBJECTResource
 from .resources import TEACHERResource
-# from .resources import ATTENDANCEINFOResource
 from .resources import ATTENDANCEResource
 from django.contrib import messages
 from tablib import Dataset
@@ -644,10 +650,6 @@ def fetch_students(request):
     
     return JsonResponse(student_data, safe=False)
 
-from django.db.models import Count, Case, When, IntegerField
-from django.db.models import Q
-
-
 def calculate_summary(student_id, start_date=None, end_date=None):
     # Filter the attendance data for the specific student and date range
     if start_date and end_date:
@@ -661,6 +663,7 @@ def calculate_summary(student_id, start_date=None, end_date=None):
             'total_days': 0,
             'total_no_of_hours': 0,
             'total_hours_attended': 0,
+            'percentage':0,
         }
     # Convert the filtered attendance data to a pandas DataFrame
     df = pd.DataFrame(list(attendance_data.values('DATE', 'HOUR1', 'HOUR2', 'HOUR3', 'HOUR4', 'HOUR5', 'HOUR6', 'HOUR7', 'HOUR8')))
@@ -675,7 +678,11 @@ def calculate_summary(student_id, start_date=None, end_date=None):
         hours_present = (df[df['DATE'] == date].iloc[:, 1:] == 'PRESENT').astype(int).sum().sum()
         total_hours_attended += hours_present
     print(total_hours_attended)
-    percentage = (total_hours_attended / (total_days * 8)) * 100
+    if (total_days != 0 ):
+        percentage = (total_hours_attended / (total_days * 8)) * 100
+        percentage = round(percentage, 2)
+    else:
+        percentage = 0
     return {
         'student_id': student_id,
         'total_days': total_days,
@@ -699,23 +706,7 @@ def attendance_summary(request):
 
     context = {'chart': chart, 'summary': summary}
     return render(request, 'attendance_summary.html', context)
-from django.http import HttpResponse
-from django.template.loader import get_template
-from django.conf import settings
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from io import BytesIO
-from django.shortcuts import render
-from django.http import HttpResponse, FileResponse
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image
-from reportlab.lib.styles import getSampleStyleSheet
-import plotly.graph_objs as go
-from plotly.offline import plot
-import io
-from datetime import datetime
+
 
 def generate_report(request):
     if request.method == 'POST':
@@ -769,3 +760,109 @@ def generate_report(request):
     else:
         # Render HTML template for initial page load
         return render(request, 'generate_report.html')
+
+
+# def generate_total_report(request):
+#     if request.method == 'POST':
+#         # Calculate summary for all students
+#         students = STUDENT.objects.all()
+#         student_summaries = []
+#         for student in students:
+#             student_id = student.STUDENT_ID
+#             summary = calculate_summary(student_id)
+#             if summary['total_days'] == 0:
+#                 continue 
+#             student_summary = [
+#                 student_id,
+#                 summary['total_days'],
+#                 summary['total_no_of_hours'],
+#                 summary['total_hours_attended'],
+#                 summary['percentage'] , 
+#             ]
+#             student_summaries.append(student_summary)
+
+#         # Create a table with headers
+#         table_data = [['Student ID', 'Total Days', 'Total Hours', 'Hours Attended', 'Percentage']]
+#         table_data.extend(student_summaries)
+
+#         # Generate PDF report with the table
+#         buf = BytesIO()
+#         doc = SimpleDocTemplate(buf, pagesize=letter)
+#         styles = getSampleStyleSheet()
+
+#         elements = []
+#         elements.append(Paragraph("Attendance Report", styles['Title']))
+#         elements.append(Spacer(1, 12))
+#         elements.append(Paragraph("Attendance Summary for All Students", styles['Heading2']))
+
+#         # Create table
+#         # table = Table(table_data)
+#         table = Table(table_data, colWidths=[200, 200], rowHeights=30)
+#         table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, (0, 0, 0)),
+#                                    ('BOX', (0, 0), (-1, -1), 0.25, (0, 0, 0))]))
+        
+#         table.wrapOn(doc, doc.width, doc.height)
+#         table_width, table_height = table.wrap(doc.width, doc.height)
+#         table.drawOn(doc, (doc.width - table_width) / 2, doc.height - table_height - 100)
+        
+#         elements.append(table)
+#         doc.build(elements)
+
+#         # Reset buffer position and return FileResponse
+#         buf.seek(0)
+#         return FileResponse(buf, as_attachment=True, filename='report.pdf')
+#     else:
+#         # Render HTML template for initial page load
+#         return render(request, 'generate_total_report.html')
+
+def generate_total_report(request):
+    if request.method == 'POST':
+        # Calculate summary for all students
+        students = STUDENT.objects.all()
+        student_summaries = []
+        for student in students:
+            student_id = student.STUDENT_ID
+            student_name = student.FIRST_NAME  # Assuming 'STUDENT_ID' is the correct field name
+            summary = calculate_summary(student_id)
+            if summary['total_days'] == 0 :
+                continue
+            student_summary = [
+                student_id,
+                student_name,
+                summary['total_days'],
+                summary['total_no_of_hours'],
+                summary['total_hours_attended'],
+                summary['percentage'],
+            ]
+            student_summaries.append(student_summary)
+
+        # Create a table with headers
+        table_data = [['Student ID','Student Name', 'Total Days', 'Total Hours', 'Hours Attended', 'Percentage']]
+        table_data.extend(student_summaries)
+
+        # Generate PDF report with the table
+        buf = BytesIO()
+        doc = SimpleDocTemplate(buf, pagesize=letter)
+        styles = getSampleStyleSheet()
+
+        elements = []
+        elements.append(Paragraph("Attendance Report", styles['Title']))
+        elements.append(Spacer(1, 12))
+        elements.append(Paragraph("Attendance Summary for All Students", styles['Heading2']))
+
+        # Create table
+        table = Table(table_data, colWidths=[None, None, None, None, None], rowHeights=30)
+        table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, (0, 0, 0)),
+                                   ('BOX', (0, 0), (-1, -1), 0.25, (0, 0, 0))]))
+
+        elements.append(table)
+
+        # Build PDF document
+        doc.build(elements)
+
+        # Reset buffer position and return FileResponse
+        buf.seek(0)
+        return FileResponse(buf, as_attachment=True, filename='report.pdf')
+    else:
+        # Render HTML template for initial page load
+        return render(request, 'generate_total_report.html')
