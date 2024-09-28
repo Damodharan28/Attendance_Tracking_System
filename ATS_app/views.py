@@ -490,11 +490,6 @@ def attendance_status(request):
 def attendance_tracking(request):
     if request.method == 'POST':
         selected_date = request.POST.get('date')
-        # if selected_date == '' or len(queryset) == 0:
-        #     error = {'error' : 'No data on this date'}
-        #     return render(request, 'attendance_status.html', error)
-        # Filter the queryset to get attendance data for the specific date
-        # Filter the attendance data for the specific date
         attendance_data = ATTENDANCE_DATA.objects.filter(DATE=selected_date)
         
         # Filter the attendance data to get only the students who are absent in the afternoon session
@@ -761,59 +756,6 @@ def generate_report(request):
         # Render HTML template for initial page load
         return render(request, 'generate_report.html')
 
-
-# def generate_total_report(request):
-#     if request.method == 'POST':
-#         # Calculate summary for all students
-#         students = STUDENT.objects.all()
-#         student_summaries = []
-#         for student in students:
-#             student_id = student.STUDENT_ID
-#             summary = calculate_summary(student_id)
-#             if summary['total_days'] == 0:
-#                 continue 
-#             student_summary = [
-#                 student_id,
-#                 summary['total_days'],
-#                 summary['total_no_of_hours'],
-#                 summary['total_hours_attended'],
-#                 summary['percentage'] , 
-#             ]
-#             student_summaries.append(student_summary)
-
-#         # Create a table with headers
-#         table_data = [['Student ID', 'Total Days', 'Total Hours', 'Hours Attended', 'Percentage']]
-#         table_data.extend(student_summaries)
-
-#         # Generate PDF report with the table
-#         buf = BytesIO()
-#         doc = SimpleDocTemplate(buf, pagesize=letter)
-#         styles = getSampleStyleSheet()
-
-#         elements = []
-#         elements.append(Paragraph("Attendance Report", styles['Title']))
-#         elements.append(Spacer(1, 12))
-#         elements.append(Paragraph("Attendance Summary for All Students", styles['Heading2']))
-
-#         # Create table
-#         # table = Table(table_data)
-#         table = Table(table_data, colWidths=[200, 200], rowHeights=30)
-#         table.setStyle(TableStyle([('INNERGRID', (0, 0), (-1, -1), 0.25, (0, 0, 0)),
-#                                    ('BOX', (0, 0), (-1, -1), 0.25, (0, 0, 0))]))
-        
-#         table.wrapOn(doc, doc.width, doc.height)
-#         table_width, table_height = table.wrap(doc.width, doc.height)
-#         table.drawOn(doc, (doc.width - table_width) / 2, doc.height - table_height - 100)
-        
-#         elements.append(table)
-#         doc.build(elements)
-
-#         # Reset buffer position and return FileResponse
-#         buf.seek(0)
-#         return FileResponse(buf, as_attachment=True, filename='report.pdf')
-#     else:
-#         # Render HTML template for initial page load
-#         return render(request, 'generate_total_report.html')
 
 def generate_total_report(request):
     if request.method == 'POST':
